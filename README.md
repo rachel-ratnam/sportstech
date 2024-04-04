@@ -1,2 +1,3 @@
 # sportstech
-Sports Tech Projext
+Sports Tech Project
+
