@@ -23,14 +23,16 @@ class NetworkService {
             
             return data
         }
-    static func callFetchAllGamesByDate(from: String, to: String) async {
+    static func callFetchAllGamesByDate(from: String, to: String) async throws -> Any {
         do {
             let data = try await self.fetchAllGamesByDate(from: from, to: to)
             // Process data here, e.g., decode JSON
             print("Data received: \(data)")
+            return data
         } catch {
             // Handle error here
             print("Error: \(error.localizedDescription)")
+            throw error
         }
     }
 }
