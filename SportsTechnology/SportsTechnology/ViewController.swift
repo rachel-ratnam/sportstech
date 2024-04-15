@@ -30,7 +30,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @objc func wakeUp(sender: UITapGestureRecognizer) {
         // Check if the canvas has already been set up to avoid doing it multiple times
         if sender.state == .ended {
-            setupField()
+            setupField() 
             // Remove the tap gesture recognizer after the canvas is added
             sceneView.removeGestureRecognizer(tapGestureRecognizer!)
         }
