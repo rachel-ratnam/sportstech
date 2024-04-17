@@ -146,7 +146,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             print("Beginning Task...")
             do {
                 print("Fetching data...")
-                let data = try await NetworkService.callFetchAllGamesByDate(from: "2024-04-14", to: "2024-04-17")
+                let data = try await NetworkService.callFetchAllGamesByDate(from: "2024-04-15", to: "2024-04-15")
                 print("AR received data: \(data)")
             } catch {
                 print("An error occurred: \(error)")
