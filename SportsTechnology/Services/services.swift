@@ -9,13 +9,10 @@ import Foundation
 
 class NetworkService {
     
-    static func fetchAllGamesByDate(from: String, to: String) async throws -> [[String: Any]] {
-        let urlString = "http://172.26.14.12:3001/get-games?from=\(from)&to=\(to)"
-        guard let url = URL(string: urlString) else {
-    var urlString: String = "http://172.26.35.203:3001" // NodeJS server ip
+    var urlString: String = "http://172.26.14.12:3001" // NodeJS server ip
     
     /* API Endpoints for NodeJS server */
-    static func fetchData(query: String) async throws -> Data {
+    static func fetchData(query: String) async throws -> [[String: Any]] {
         guard let url = URL(string: NetworkService().urlString + query) else {
             throw NSError(domain: "NetworkService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
@@ -62,9 +59,7 @@ class NetworkService {
     static func fetchAllGamesByDate(from: String, to: String) async throws -> Any {
         do {
             print("In services, getting data...")
-            let data = try await self.fetchAllGamesByDate(from: from, to: to)
-            // Process data here, e.g., decode JSON
-//            print("Data received: \(data)")
+            let data = try await self.fetchData(query: "/get-games?from=\(from)&to=\(to)")
             return data
         } catch {
             // Handle error here

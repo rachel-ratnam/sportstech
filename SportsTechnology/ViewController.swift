@@ -13,10 +13,13 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
     var tapGestureRecognizer: UITapGestureRecognizer?
-//    var apiControl: NetworkService?
+    var FIELD_WIDTH: CGFloat? // meters
+    var FIELD_HEIGHT: CGFloat? //meters
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        FIELD_WIDTH = 0.6
+        FIELD_HEIGHT = 1.0
         
         // Set up the view
         sceneView.frame = self.view.frame
@@ -83,13 +86,13 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     func getTransform(currentFrame: ARFrame) -> simd_float4x4 {
         var translation = matrix_identity_float4x4
-        translation.columns.3.z = -0.5 // Canvas will be half a meter in front of the camera
+        translation.columns.3.z = -1.0 // Canvas will be half a meter in front of the camera
         return simd_mul(currentFrame.camera.transform, translation)
     }
     
     func setupCanvas(transform: simd_float4x4) -> SCNNode {
         // Add a blank canvas (simple white plane)
-        let plane = SCNPlane(width: 0.4, height: 0.4) // Adjust dimensions as needed
+        let plane = SCNPlane(width: FIELD_WIDTH ?? 0.6, height: FIELD_HEIGHT ?? 1.0) // Adjust dimensions as needed
         plane.firstMaterial?.diffuse.contents = UIColor.white
         let canvasNode = SCNNode(geometry: plane)
         canvasNode.simdTransform = transform // Adjust position of node based on camera transform
@@ -104,8 +107,20 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         button.backgroundColor = UIColor.blue // Making the button blue for visibility
         button.setTitleColor(UIColor.white, for: .normal) // Set the title color to white
         button.setTitle("Next Page", for: .normal)
-        button.addTarget(self, action: #selector(showTeams), for: .touchUpInside)
+        button.addTarget(self, action: #selector(showFixtures), for: .touchUpInside)
         return button
+    }
+    
+    func attachButton(transform: simd_float4x4) -> SCNNode {
+        // Attach button to scene
+        let button = createButton()
+        let buttonNode = SCNNode() // Adjust button size
+        buttonNode.geometry = SCNPlane(width: 0.1, height: 0.05)
+        buttonNode.geometry?.firstMaterial?.diffuse.contents = button
+        buttonNode.position = SCNVector3Make(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
+        buttonNode.position.z += 0.06 // Make sure the button is positioned in front of the canvas
+        buttonNode.name = "buttonNode"
+        return buttonNode
     }
     
     func setupField() {
@@ -116,17 +131,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Create a new node for the canvas
         let scene = SCNScene()
         
-        // Create a button
-        let button = createButton()
+        // Create a button and attach to scene
+        let button = attachButton(transform: transform)
         
-        // Attach button to scene
-        let buttonNode = SCNNode() // Adjust button size
-        buttonNode.geometry = SCNPlane(width: 0.1, height: 0.05)
-        buttonNode.geometry?.firstMaterial?.diffuse.contents = button
-        buttonNode.position = SCNVector3Make(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
-        buttonNode.position.z += 0.06 // Make sure the button is positioned in front of the canvas
-        buttonNode.name = "buttonNode"
-        scene.rootNode.addChildNode(buttonNode)
+        
+        scene.rootNode.addChildNode(button)
         
         
         scene.rootNode.addChildNode(setupCanvas(transform: transform))
@@ -135,38 +144,32 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.scene = scene
     }
     
-    @objc func showTeams() {
+    @objc func showFixtures() {
         // Implement navigation to the next page
         print("Navigating to next page...")
         // Remove the button from the canvas node
         if let buttonNode = sceneView.scene.rootNode.childNode(withName: "buttonNode", recursively: true) {
             buttonNode.removeFromParentNode()
         }
+        addTeams()
         Task {
             print("Beginning Task...")
             do {
                 print("Fetching data...")
-                let data = try await NetworkService.callFetchAllGamesByDate(from: "2024-04-15", to: "2024-04-15")
-                print("AR received data: \(data)")
+                var data = try await NetworkService.fetchAllGamesByDate(from: "2024-04-15", to: "2024-04-15")
+                print("Received data: \(data)")
             } catch {
                 print("An error occurred: \(error)")
             }
-
-            // Remove the button from the canvas node
-            if let buttonNode = sceneView.scene.rootNode.childNode(withName: "buttonNode", recursively: true) {
-                buttonNode.removeFromParentNode()
-            }
         }
-
-        addTeams()
     }
     
     func createTeam(x: CGFloat, y: CGFloat, z: CGFloat, color: UIColor) -> SCNNode {
-        let bluePlane = SCNPlane(width: 0.4, height: 0.2) // Adjust dimensions as needed
-        bluePlane.firstMaterial?.diffuse.contents = color
-        let bluePlaneNode = SCNNode(geometry: bluePlane)
-        bluePlaneNode.position = SCNVector3(x, y, z) // Slightly below the red plane
-        return bluePlaneNode
+        let plane = SCNPlane(width: (FIELD_WIDTH ?? 0.6), height: (FIELD_HEIGHT ?? 1.0)/2) // Adjust dimensions as needed
+        plane.firstMaterial?.diffuse.contents = color
+        let planeNode = SCNNode(geometry: plane)
+        planeNode.position = SCNVector3(x, y, z)
+        return planeNode
     }
     
     func addTeams() {
@@ -178,8 +181,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
         // Create a new node to hold both teams
         let teamsNode = SCNNode()
-        teamsNode.addChildNode(createTeam(x: 0, y: -0.1, z: 0.06, color: UIColor.red))
-        teamsNode.addChildNode(createTeam(x: 0, y: 0.1, z: 0.06, color: UIColor.blue))
+        teamsNode.addChildNode(createTeam(x: 0, y: -(FIELD_HEIGHT ?? 1.0)/4, z: 0.06, color: UIColor.red))
+        teamsNode.addChildNode(createTeam(x: 0, y: (FIELD_HEIGHT ?? 1.0)/4, z: 0.06, color: UIColor.blue))
         
         // Add the planes node to the canvas node
         canvasNode.addChildNode(teamsNode)
