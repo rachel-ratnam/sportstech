@@ -13,6 +13,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
     var tapGestureRecognizer: UITapGestureRecognizer?
+//    var apiControl: NetworkService?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -141,7 +142,22 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         if let buttonNode = sceneView.scene.rootNode.childNode(withName: "buttonNode", recursively: true) {
             buttonNode.removeFromParentNode()
         }
-        
+        Task {
+            print("Beginning Task...")
+            do {
+                print("Fetching data...")
+                let data = try await NetworkService.callFetchAllGamesByDate(from: "2024-04-14", to: "2024-04-17")
+                print("AR received data: \(data)")
+            } catch {
+                print("An error occurred: \(error)")
+            }
+
+            // Remove the button from the canvas node
+            if let buttonNode = sceneView.scene.rootNode.childNode(withName: "buttonNode", recursively: true) {
+                buttonNode.removeFromParentNode()
+            }
+        }
+
         addTeams()
     }
     
