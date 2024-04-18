@@ -151,17 +151,103 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         if let buttonNode = sceneView.scene.rootNode.childNode(withName: "buttonNode", recursively: true) {
             buttonNode.removeFromParentNode()
         }
-        addTeams()
+        //addTeams()
         Task {
             print("Beginning Task...")
             do {
                 print("Fetching data...")
                 var data = try await NetworkService.fetchAllGamesByDate(from: "2024-04-15", to: "2024-04-15")
+                addFixtureNodes(data: data)
                 print("Received data: \(data)")
             } catch {
                 print("An error occurred: \(error)")
             }
         }
+    }
+    func addFixtureNodes(data: [GameInfo]) {
+        for game in data {
+            let fixtureNode = createFixtureNode(game: game)
+            sceneView.scene.rootNode.addChildNode(fixtureNode)
+        }
+    }
+
+    func createFixtureNode(game: GameInfo) -> SCNNode {
+        let fixtureTexture = createFixtureTexture(game: game)
+        let plane = SCNPlane(width: FIELD_WIDTH ?? 0.6, height: FIELD_HEIGHT ?? 1.0)
+        plane.firstMaterial?.diffuse.contents = fixtureTexture
+        let fixtureNode = SCNNode(geometry: plane)
+        // Use the camera transform to place the node in front of the camera
+        if let currentFrame = self.sceneView.session.currentFrame {
+                // Use the camera's current transform
+                let cameraTransform = currentFrame.camera.transform
+                var translationMatrix = matrix_identity_float4x4
+                // Define how far away from the camera you want to place the node (e.g., 0.5 meters in front)
+                translationMatrix.columns.3.z = -0.5
+                // Combine the camera and translation matrices
+                let modifiedTransform = simd_mul(cameraTransform, translationMatrix)
+                fixtureNode.simdTransform = modifiedTransform
+            }
+
+        return fixtureNode
+    }
+    
+    func createFixtureTexture(game: GameInfo) -> UIImage {
+        // Define the size of the image you want to create.
+        let imageSize = CGSize(width: 600, height: 100) // Example size, you'll want to scale this appropriately.
+        
+        // Begin image context
+        UIGraphicsBeginImageContextWithOptions(imageSize, false, 0)
+        guard let context = UIGraphicsGetCurrentContext() else {
+            return UIImage()
+        }
+        
+        // Draw background
+        let backgroundColor = UIColor.white
+        backgroundColor.set()
+        context.fill(CGRect(origin: .zero, size: imageSize))
+        
+        // Set up the attributes for drawing text
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 16),
+            .foregroundColor: UIColor.black
+        ]
+        
+        // Draw the home team name
+        if let homeTeamInfo = game.teams["home"] as? [String: Any],
+           let awayTeamInfo = game.teams["away"] as? [String: Any] {
+            
+            // Extract the team names from the nested dictionaries
+            let homeTeamName = homeTeamInfo["name"] as? String ?? "Home Team"
+            let awayTeamName = awayTeamInfo["name"] as? String ?? "Away Team"
+            
+            // ... [Use homeTeamName and awayTeamName to draw your fixture texture] ...
+            
+            let homeTeamRect = CGRect(x: 10, y: 15, width: imageSize.width / 2 - 10, height: 20)
+            homeTeamName.draw(in: homeTeamRect, withAttributes: attributes)
+            
+            let awayTeamRect = CGRect(x: imageSize.width / 2, y: 15, width: imageSize.width / 2 - 10, height: 20)
+            awayTeamName.draw(in: awayTeamRect, withAttributes: attributes)
+        }
+            // Draw the match time
+            let matchTimeString = game.fixture["date"] as? String ?? "Match Time"
+            let matchTimeRect = CGRect(x: 10, y: 40, width: imageSize.width - 20, height: 20)
+            matchTimeString.draw(in: matchTimeRect, withAttributes: attributes)
+            
+            // Draw the goals
+            if let homeGoals = game.goals["home"], let awayGoals = game.goals["away"] {
+                let goalsString = "\(homeGoals) - \(awayGoals)"
+                let goalsRect = CGRect(x: 10, y: 65, width: imageSize.width - 20, height: 20)
+                goalsString.draw(in: goalsRect, withAttributes: attributes)
+            }
+            
+            // You could also load and draw the team logos from the URLs provided in the GameInfo struct.
+            // For example, you might use an image loading library or a URLSession to fetch the image data and create UIImage instances.
+            
+            // End the graphics context and return the image
+            let image = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            
+            return image ?? UIImage()
     }
     
     func createTeam(x: CGFloat, y: CGFloat, z: CGFloat, color: UIColor) -> SCNNode {
