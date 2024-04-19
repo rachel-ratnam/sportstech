@@ -16,6 +16,13 @@
 		3CBD80D22B9F8EE000004F5C /* SportsTechnologyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBD80D12B9F8EE000004F5C /* SportsTechnologyUITests.swift */; };
 		3CBD80D42B9F8EE000004F5C /* SportsTechnologyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBD80D32B9F8EE000004F5C /* SportsTechnologyUITestsLaunchTests.swift */; };
 		68A091B62BCDCECE00312764 /* services.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A091B52BCDCECE00312764 /* services.swift */; };
+		D80EA84A2BD2E1AD001C92B0 /* Fixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80EA8492BD2E1AD001C92B0 /* Fixtures.swift */; };
+		D80EA84F2BD2E69B001C92B0 /* Venues.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80EA84E2BD2E69B001C92B0 /* Venues.swift */; };
+		D80EA8512BD2E6A6001C92B0 /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80EA8502BD2E6A6001C92B0 /* Status.swift */; };
+		D80EA8532BD2E6C1001C92B0 /* Team.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80EA8522BD2E6C1001C92B0 /* Team.swift */; };
+		D80EA8552BD2E71C001C92B0 /* WinnerStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80EA8542BD2E71C001C92B0 /* WinnerStatus.swift */; };
+		D80EA8572BD2EC26001C92B0 /* LeagueInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80EA8562BD2EC26001C92B0 /* LeagueInfo.swift */; };
+		D80EA85A2BD30295001C92B0 /* FixtureViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80EA8592BD30295001C92B0 /* FixtureViews.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +55,13 @@
 		3CBD80D12B9F8EE000004F5C /* SportsTechnologyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SportsTechnologyUITests.swift; sourceTree = "<group>"; };
 		3CBD80D32B9F8EE000004F5C /* SportsTechnologyUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SportsTechnologyUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		68A091B52BCDCECE00312764 /* services.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = services.swift; sourceTree = "<group>"; };
+		D80EA8492BD2E1AD001C92B0 /* Fixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fixtures.swift; sourceTree = "<group>"; };
+		D80EA84E2BD2E69B001C92B0 /* Venues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Venues.swift; sourceTree = "<group>"; };
+		D80EA8502BD2E6A6001C92B0 /* Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Status.swift; sourceTree = "<group>"; };
+		D80EA8522BD2E6C1001C92B0 /* Team.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Team.swift; sourceTree = "<group>"; };
+		D80EA8542BD2E71C001C92B0 /* WinnerStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WinnerStatus.swift; sourceTree = "<group>"; };
+		D80EA8562BD2EC26001C92B0 /* LeagueInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeagueInfo.swift; sourceTree = "<group>"; };
+		D80EA8592BD30295001C92B0 /* FixtureViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureViews.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +112,8 @@
 		3CBD80B32B9F8EDF00004F5C /* SportsTechnology */ = {
 			isa = PBXGroup;
 			children = (
+				D80EA8582BD30273001C92B0 /* FixtureViews */,
+				D80EA8452BD2E05A001C92B0 /* ClassDefinitions */,
 				68A091B42BCDCEC100312764 /* Services */,
 				3CBD80B42B9F8EDF00004F5C /* AppDelegate.swift */,
 				3CBD80B62B9F8EDF00004F5C /* art.scnassets */,
@@ -131,6 +147,27 @@
 				68A091B52BCDCECE00312764 /* services.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		D80EA8452BD2E05A001C92B0 /* ClassDefinitions */ = {
+			isa = PBXGroup;
+			children = (
+				D80EA8492BD2E1AD001C92B0 /* Fixtures.swift */,
+				D80EA84E2BD2E69B001C92B0 /* Venues.swift */,
+				D80EA8502BD2E6A6001C92B0 /* Status.swift */,
+				D80EA8522BD2E6C1001C92B0 /* Team.swift */,
+				D80EA8542BD2E71C001C92B0 /* WinnerStatus.swift */,
+				D80EA8562BD2EC26001C92B0 /* LeagueInfo.swift */,
+			);
+			path = ClassDefinitions;
+			sourceTree = "<group>";
+		};
+		D80EA8582BD30273001C92B0 /* FixtureViews */ = {
+			isa = PBXGroup;
+			children = (
+				D80EA8592BD30295001C92B0 /* FixtureViews.swift */,
+			);
+			path = FixtureViews;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -264,9 +301,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D80EA85A2BD30295001C92B0 /* FixtureViews.swift in Sources */,
 				68A091B62BCDCECE00312764 /* services.swift in Sources */,
 				3CBD80B92B9F8EDF00004F5C /* ViewController.swift in Sources */,
+				D80EA8532BD2E6C1001C92B0 /* Team.swift in Sources */,
 				3CBD80B52B9F8EDF00004F5C /* AppDelegate.swift in Sources */,
+				D80EA8552BD2E71C001C92B0 /* WinnerStatus.swift in Sources */,
+				D80EA84F2BD2E69B001C92B0 /* Venues.swift in Sources */,
+				D80EA8572BD2EC26001C92B0 /* LeagueInfo.swift in Sources */,
+				D80EA84A2BD2E1AD001C92B0 /* Fixtures.swift in Sources */,
+				D80EA8512BD2E6A6001C92B0 /* Status.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,7 +484,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 793QY8AV8M;
+				DEVELOPMENT_TEAM = 25N7GFB35A;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -470,7 +514,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 793QY8AV8M;
+				DEVELOPMENT_TEAM = 25N7GFB35A;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

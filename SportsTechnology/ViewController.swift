@@ -156,7 +156,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             print("Beginning Task...")
             do {
                 print("Fetching data...")
-                var data = try await NetworkService.fetchAllGamesByDate(from: "2024-04-15", to: "2024-04-15")
+                let data = try await NetworkService.fetchAllGamesByDate(from: "2024-04-13", to: "2024-04-13")
                 addFixtureNodes(data: data)
                 print("Received data: \(data)")
             } catch {
@@ -164,14 +164,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             }
         }
     }
-    func addFixtureNodes(data: [GameInfo]) {
-        for game in data {
+    func addFixtureNodes(data: LeagueInfo) {
+        for game in data.fixtures {
             let fixtureNode = createFixtureNode(game: game)
             sceneView.scene.rootNode.addChildNode(fixtureNode)
         }
     }
 
-    func createFixtureNode(game: GameInfo) -> SCNNode {
+    func createFixtureNode(game: Fixture) -> SCNNode {
         let fixtureTexture = createFixtureTexture(game: game)
         let plane = SCNPlane(width: FIELD_WIDTH ?? 0.6, height: FIELD_HEIGHT ?? 1.0)
         plane.firstMaterial?.diffuse.contents = fixtureTexture
@@ -191,7 +191,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         return fixtureNode
     }
     
-    func createFixtureTexture(game: GameInfo) -> UIImage {
+    func createFixtureTexture(game: Fixture) -> UIImage {
         // Define the size of the image you want to create.
         let imageSize = CGSize(width: 600, height: 100) // Example size, you'll want to scale this appropriately.
         
@@ -213,14 +213,12 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         ]
         
         // Draw the home team name
-        if let homeTeamInfo = game.teams["home"] as? [String: Any],
-           let awayTeamInfo = game.teams["away"] as? [String: Any] {
+        if let homeTeamInfo = game.teams["home"],
+           let awayTeamInfo = game.teams["away"] {
             
             // Extract the team names from the nested dictionaries
-            let homeTeamName = homeTeamInfo["name"] as? String ?? "Home Team"
-            let awayTeamName = awayTeamInfo["name"] as? String ?? "Away Team"
-            
-            // ... [Use homeTeamName and awayTeamName to draw your fixture texture] ...
+            let homeTeamName = homeTeamInfo.name
+            let awayTeamName = awayTeamInfo.name
             
             let homeTeamRect = CGRect(x: 10, y: 15, width: imageSize.width / 2 - 10, height: 20)
             homeTeamName.draw(in: homeTeamRect, withAttributes: attributes)
@@ -229,7 +227,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             awayTeamName.draw(in: awayTeamRect, withAttributes: attributes)
         }
             // Draw the match time
-            let matchTimeString = game.fixture["date"] as? String ?? "Match Time"
+        let matchTimeString = game.date as String
             let matchTimeRect = CGRect(x: 10, y: 40, width: imageSize.width - 20, height: 20)
             matchTimeString.draw(in: matchTimeRect, withAttributes: attributes)
             
@@ -239,9 +237,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 let goalsRect = CGRect(x: 10, y: 65, width: imageSize.width - 20, height: 20)
                 goalsString.draw(in: goalsRect, withAttributes: attributes)
             }
-            
-            // You could also load and draw the team logos from the URLs provided in the GameInfo struct.
-            // For example, you might use an image loading library or a URLSession to fetch the image data and create UIImage instances.
             
             // End the graphics context and return the image
             let image = UIGraphicsGetImageFromCurrentImageContext()

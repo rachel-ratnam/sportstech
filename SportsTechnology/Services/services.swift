@@ -15,10 +15,10 @@ struct GameInfo {
 
 class NetworkService {
     
-    var urlString: String = "http://10.0.0.7:3001" // NodeJS server ip
+    var urlString: String = "http://192.168.1.224:3001" // NodeJS server ip
     
     /* API Endpoints for NodeJS server */
-    static func fetchData(query: String) async throws -> [GameInfo] {
+    static func fetchData(query: String) async throws -> LeagueInfo {
         guard let url = URL(string: NetworkService().urlString + query) else {
             throw NSError(domain: "NetworkService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
@@ -32,46 +32,60 @@ class NetworkService {
         return try! parseData(data: data)
     }
     
-    static func parseData(data: Data) throws -> [GameInfo] {
-        var gamesInfo: [GameInfo] = []
+    static func parseData(data: Data) throws -> LeagueInfo {
+        var leagueInfo: LeagueInfo = LeagueInfo()
 
             do {
                 if let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
                     
                     for game in jsonObject {
-                        var fixtureInfo: [String: Any] = [:]
-                        var teamsInfo: [String: Any] = [:]
-                        var goalsInfo: [String: Int] = [:]
+                        var fixtureInfo: Fixture = Fixture()
+                        var homeTeam: Team = Team(winner: nil)
+                        var awayTeam: Team = Team(winner: nil)
 
                         if let fixture = game["fixture"] as? [String: Any] {
-                            fixtureInfo = [
-                                "id": fixture["id"] ?? "",
-                                "date": fixture["date"] ?? "",
-                                "timestamp": fixture["timestamp"] ?? "",
-                                "venue": fixture["venue"] ?? [String: Any](),
-                                "status": fixture["status"] ?? [String: Any]()
-                            ]
-                        }
-                        
-                        if let teams = game["teams"] as? [String: Any] {
-                            teamsInfo = teams.reduce(into: [:]) { result, team in
-                                if let teamDetails = team.value as? [String: Any] {
-                                    result[team.key] = [
-                                        "id": teamDetails["id"] ?? "",
-                                        "name": teamDetails["name"] ?? "",
-                                        "logo": teamDetails["logo"] ?? "",
-                                        "winner": teamDetails["winner"] ?? false
-                                    ]
-                                }
+                            fixtureInfo.id = fixture["id"] as! Int
+                            fixtureInfo.date = fixture["date"] as! String
+                            fixtureInfo.timezone = fixture["timezone"] as! String
+                            
+                            if let venueInfo = fixture["venue"] as? [String: Any] {
+                                fixtureInfo.venue = Venues()
+                                fixtureInfo.venue.city = venueInfo["city"] as! String
+                                fixtureInfo.venue.name = venueInfo["name"] as! String
+                                fixtureInfo.venue.id = venueInfo["id"] as! Int
+                            }
+                            
+                            if let gameStatus = fixture["status"] as? [String: Any] {
+                                fixtureInfo.status = Status()
+                                fixtureInfo.status.longDescription = gameStatus["long"] as! String
+                                fixtureInfo.status.shortDescription = gameStatus["short"] as! String
+                                fixtureInfo.status.elapsed = gameStatus["elapsed"] as! Int
                             }
                         }
                         
                         if let goals = game["goals"] as? [String: Int] {
-                            goalsInfo = goals
+                            fixtureInfo.goals = goals
                         }
                         
-                        let gameInfo = GameInfo(fixture: fixtureInfo, teams: teamsInfo, goals: goalsInfo)
-                        gamesInfo.append(gameInfo)
+                        if let teams = game["teams"] as? [String: Any] {
+                            if let hTeamInfo = teams["home"] as? [String: Any]{
+                                homeTeam.id = hTeamInfo["id"] as! Int
+                                homeTeam.logoURL = hTeamInfo["logo"] as! String
+                                homeTeam.name = hTeamInfo["name"] as! String
+                                homeTeam.winner = hTeamInfo["winner"] as? WinnerStatus
+                            }
+                            if let aTeamInfo = teams["away"] as? [String: Any]{
+                                awayTeam.id = aTeamInfo["id"] as! Int
+                                awayTeam.logoURL = aTeamInfo["logo"] as! String
+                                awayTeam.name = aTeamInfo["name"] as! String
+                                awayTeam.winner = aTeamInfo["winner"] as? WinnerStatus
+                            }
+                            fixtureInfo.teams = ["home": homeTeam, "away": awayTeam]
+                        }
+                        
+                        leagueInfo.fixtures.append(fixtureInfo)
+                        //let gameInfo = GameInfo(fixture: fixtureInfo, teams: teamsInfo, goals: goalsInfo)
+                        //gamesInfo.append(gameInfo)
                     }
                 } else {
                     throw NSError(domain: "NetworkService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Invalid JSON structure"])
@@ -80,12 +94,12 @@ class NetworkService {
                 throw NSError(domain: "NetworkService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Error parsing JSON: \(error.localizedDescription)"])
             }
             
-            return gamesInfo
+            return leagueInfo
     }
     
     
     /* Function wrappers for endpoint calls */
-    static func fetchAllGamesByDate(from: String, to: String) async throws -> [GameInfo] {
+    static func fetchAllGamesByDate(from: String, to: String) async throws -> LeagueInfo {
         do {
             print("In services, getting data...")
             let data = try await self.fetchData(query: "/get-games?from=\(from)&to=\(to)")
