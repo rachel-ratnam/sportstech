@@ -8,6 +8,7 @@
 import UIKit
 import SceneKit
 import ARKit
+import SwiftUI
 
 class ViewController: UIViewController, ARSCNViewDelegate {
 
@@ -156,14 +157,40 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             print("Beginning Task...")
             do {
                 print("Fetching data...")
-                let data = try await NetworkService.fetchAllGamesByDate(from: "2024-04-13", to: "2024-04-13")
-                addFixtureNodes(data: data)
-                print("Received data: \(data)")
+                let data = try await NetworkService.fetchAllGamesByDate(from: "2024-04-15", to: "2024-04-15")
+                //addFixtureNodes(data: data)
+                print("Received data from server!")
+                DispatchQueue.main.async {
+                    self.displayFixtureViews(leagueInfo: data)
+                }
             } catch {
                 print("An error occurred: \(error)")
             }
         }
     }
+    
+    private func displayFixtureViews(leagueInfo: LeagueInfo) {
+        for fixture in leagueInfo.fixtures {
+            // Create a SwiftUI view with the fixture information
+            let fixtureView = FixtureCardView(
+                homeTeamName: fixture.teams["home"]?.name ?? "Home Team",
+                awayTeamName: fixture.teams["away"]?.name ?? "Away Team",
+                homeTeamFlag: Image("englandflag"),//fixture.teams["home"]?.logoURL ?? "",
+                awayTeamFlag: Image("iranflag"),//fixture.teams["away"]?.logoURL ?? "",
+                matchDate: fixture.date,
+                matchTime: fixture.timezone,
+                matchVenue: fixture.venue
+            )
+
+            // Create a UIHostingController with the SwiftUI view
+            let hostingController = UIHostingController(rootView: fixtureView)
+
+            // Present or add the hosting controller's view to your interface
+            present(hostingController, animated: true)
+            // If you want to add it to the AR scene, you'd create a SCNNode with the view as a texture
+        }
+    }
+    
     func addFixtureNodes(data: LeagueInfo) {
         for game in data.fixtures {
             let fixtureNode = createFixtureNode(game: game)

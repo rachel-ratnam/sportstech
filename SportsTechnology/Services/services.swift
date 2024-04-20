@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct GameInfo {
     var fixture: [String: Any]
@@ -96,7 +97,6 @@ class NetworkService {
             
             return leagueInfo
     }
-    
     
     /* Function wrappers for endpoint calls */
     static func fetchAllGamesByDate(from: String, to: String) async throws -> LeagueInfo {
