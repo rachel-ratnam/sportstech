@@ -41,8 +41,6 @@ class NetworkService {
                     
                     for game in jsonObject {
                         var fixtureInfo: Fixture = Fixture()
-                        var homeTeam: Team = Team(winner: nil)
-                        var awayTeam: Team = Team(winner: nil)
 
                         if let fixture = game["fixture"] as? [String: Any] {
                             fixtureInfo.id = fixture["id"] as! Int
@@ -67,26 +65,24 @@ class NetworkService {
                         if let goals = game["goals"] as? [String: Int] {
                             fixtureInfo.goals = goals
                         }
-                        
+                        fixtureInfo.teams = ["home": Team(winner: nil), "away": Team(winner: nil)]
                         if let teams = game["teams"] as? [String: Any] {
                             if let hTeamInfo = teams["home"] as? [String: Any]{
-                                homeTeam.id = hTeamInfo["id"] as! Int
-                                homeTeam.logoURL = hTeamInfo["logo"] as! String
-                                homeTeam.name = hTeamInfo["name"] as! String
-                                homeTeam.winner = hTeamInfo["winner"] as? WinnerStatus
+                                print(hTeamInfo)
+                                fixtureInfo.teams["home"]?.id = hTeamInfo["id"] as! Int
+                                fixtureInfo.teams["home"]?.logoURL = hTeamInfo["logo"] as! String
+                                fixtureInfo.teams["home"]?.name = hTeamInfo["name"] as! String
+                                fixtureInfo.teams["home"]?.winner = hTeamInfo["winner"] as? WinnerStatus
                             }
                             if let aTeamInfo = teams["away"] as? [String: Any]{
-                                awayTeam.id = aTeamInfo["id"] as! Int
-                                awayTeam.logoURL = aTeamInfo["logo"] as! String
-                                awayTeam.name = aTeamInfo["name"] as! String
-                                awayTeam.winner = aTeamInfo["winner"] as? WinnerStatus
+                                fixtureInfo.teams["away"]?.id = aTeamInfo["id"] as! Int
+                                fixtureInfo.teams["away"]?.logoURL = aTeamInfo["logo"] as! String
+                                fixtureInfo.teams["away"]?.name = aTeamInfo["name"] as! String
+                                fixtureInfo.teams["away"]?.winner = aTeamInfo["winner"] as? WinnerStatus
                             }
-                            fixtureInfo.teams = ["home": homeTeam, "away": awayTeam]
                         }
                         
                         leagueInfo.fixtures.append(fixtureInfo)
-                        //let gameInfo = GameInfo(fixture: fixtureInfo, teams: teamsInfo, goals: goalsInfo)
-                        //gamesInfo.append(gameInfo)
                     }
                 } else {
                     throw NSError(domain: "NetworkService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Invalid JSON structure"])

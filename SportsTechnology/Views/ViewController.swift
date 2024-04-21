@@ -157,11 +157,12 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             print("Beginning Task...")
             do {
                 print("Fetching data...")
-                let data = try await NetworkService.fetchAllGamesByDate(from: "2024-04-15", to: "2024-04-15")
+                let data = try await NetworkService.fetchAllGamesByDate(from: "2024-04-13", to: "2024-04-13")
                 //addFixtureNodes(data: data)
-                print("Received data from server!")
+                print("Received data from server: \(String(describing: data.fixtures[0].teams["home"]))")
                 DispatchQueue.main.async {
-                    self.displayFixtureViews(leagueInfo: data)
+                    //self.createImageForAR(fixtures: data.fixtures)
+                    self.displayFixtures(fixtures: data.fixtures)
                 }
             } catch {
                 print("An error occurred: \(error)")
@@ -169,26 +170,67 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         }
     }
     
-    private func displayFixtureViews(leagueInfo: LeagueInfo) {
-        for fixture in leagueInfo.fixtures {
-            // Create a SwiftUI view with the fixture information
-            let fixtureView = FixtureCardView(
-                homeTeamName: fixture.teams["home"]?.name ?? "Home Team",
-                awayTeamName: fixture.teams["away"]?.name ?? "Away Team",
-                homeTeamFlag: Image("englandflag"),//fixture.teams["home"]?.logoURL ?? "",
-                awayTeamFlag: Image("iranflag"),//fixture.teams["away"]?.logoURL ?? "",
-                matchDate: fixture.date,
-                matchTime: fixture.timezone,
-                matchVenue: fixture.venue
-            )
+    func displayFixtures(fixtures: [Fixture]) {
+        // Create a SwiftUI view with the fixture information
+        let fixtureView = GamesInfo(fixtures: fixtures)
 
-            // Create a UIHostingController with the SwiftUI view
-            let hostingController = UIHostingController(rootView: fixtureView)
+        // Create a UIHostingController with the SwiftUI view
+        let hostingController = UIHostingController(rootView: fixtureView)
 
-            // Present or add the hosting controller's view to your interface
-            present(hostingController, animated: true)
-            // If you want to add it to the AR scene, you'd create a SCNNode with the view as a texture
+        // Present or add the hosting controller's view to your interface
+        present(hostingController, animated: true)
+    }
+    
+    func createImageForAR(fixtures: [Fixture]) {
+        // Create the SwiftUI view you want to render
+        let fixtureListView = GamesInfo(fixtures: fixtures)
+        // Convert the SwiftUI view to a UIImage
+        let hostingController = UIHostingController(rootView: fixtureListView)
+        guard let fixtureListView = hostingController.view else { return }
+        fixtureListView.frame = CGRect(x: 0, y: 0, width: FIELD_WIDTH ?? 0.6, height: FIELD_HEIGHT ?? 1.0)
+        fixtureListView.backgroundColor = .clear
+        
+        // Render the view to an image
+        let image = renderViewToImage(view: fixtureListView)
+
+        // Use the image in your AR scene
+        if let image = image {
+            addImageToARScene(image: image)
         }
+    }
+    
+    func renderViewToImage(view: UIView) -> UIImage? {
+        let renderer = UIGraphicsImageRenderer(size: view.bounds.size)
+        return renderer.image { ctx in
+            view.drawHierarchy(in: view.bounds, afterScreenUpdates: true)
+        }
+    }
+    
+    func addImageToARScene(image: UIImage) {
+        // Find the canvas node
+        guard let canvasNode = sceneView.scene.rootNode.childNode(withName: "canvasNode", recursively: true) else {
+            print("Canvas node not found.")
+            return
+        }
+        let planeGeometry = SCNPlane(width: FIELD_WIDTH ?? 0.6, height: CGFloat(image.size.height / image.size.width))
+        planeGeometry.firstMaterial?.diffuse.contents = image
+        planeGeometry.firstMaterial?.lightingModel = .constant // Avoids lighting changes
+        planeGeometry.firstMaterial?.isDoubleSided = true
+
+        let planeNode = SCNNode(geometry: planeGeometry)
+        planeNode.position = SCNVector3(0, 0, 0.06)
+        
+        if let currentFrame = self.sceneView.session.currentFrame {
+            // Use the camera's current transform
+            let cameraTransform = currentFrame.camera.transform
+            var translationMatrix = matrix_identity_float4x4
+            // Define how far away from the camera you want to place the node (e.g., 0.5 meters in front)
+            translationMatrix.columns.3.z = -0.5
+            // Combine the camera and translation matrices
+            let modifiedTransform = simd_mul(cameraTransform, translationMatrix)
+            planeNode.simdTransform = modifiedTransform
+        }
+        canvasNode.addChildNode(planeNode)
     }
     
     func addFixtureNodes(data: LeagueInfo) {

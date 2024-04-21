@@ -12,12 +12,12 @@ import SwiftUI
 struct FixtureCardView: View {
     var homeTeamName: String
     var awayTeamName: String
-    var homeTeamFlag: Image
-    var awayTeamFlag: Image
+    var homeTeamFlag: String
+    var awayTeamFlag: String
     var matchDate: String
     var matchTime: String
     var matchVenue: Venues
-
+    
     var body: some View {
         VStack(spacing: 5) {
             Text("\(matchDate) | \(matchTime)")
@@ -26,42 +26,40 @@ struct FixtureCardView: View {
             Text("\(matchVenue.name) | \(matchVenue.city)")
                 .font(.caption)
                 .foregroundColor(.white)
-//            HStack {
-//                AsyncImage(url: URL(string: awayTeamFlag)) { image in
-//                    image.resizable()
-//                } placeholder: {
-//                    Image("englandflag")
-//                }
-//                .scaledToFit()
-//                .frame(width: 50, height: 30)
-//                
-//                Spacer()
-//                
-//                Text("VS")
-//                    .font(.headline)
-//                    .foregroundColor(.white)
-//                Spacer()
-//                
-//                AsyncImage(url: URL(string: homeTeamFlag)) { image in
-//                    image.resizable()
-//                } placeholder: {
-//                    Image("iranflag")
-//                }
-//                .scaledToFit()
-//                .frame(width: 50, height: 30)
-//            }
             HStack {
-                homeTeamFlag
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 50, height: 30)
+                // Home Team Flag
+                AsyncImage(url: URL(string: homeTeamFlag)) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image.resizable().aspectRatio(contentMode: .fit)
+                    case .failure(_):
+                        Image(systemName: "photo") // Or a default placeholder image
+                    case .empty:
+                        ProgressView()
+                    @unknown default:
+                        EmptyView()
+                    }
+                }
+                .scaledToFit()
+                .frame(width: 50, height: 30)
+                
+                Spacer()
+                
                 Text("VS")
                     .font(.headline)
                     .foregroundColor(.white)
-                awayTeamFlag
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 50, height: 30)
+                Spacer()
+                
+                AsyncImage(url: URL(string: awayTeamFlag)) { image in
+                    image.resizable()
+                } placeholder: {
+                    Image("iranflag")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 50, height: 30)
+                }
+                .scaledToFit()
+                .frame(width: 50, height: 30)
             }
             HStack {
                 Text(awayTeamName)
@@ -77,7 +75,7 @@ struct FixtureCardView: View {
         .background(LinearGradient(gradient: Gradient(colors: [.red, .purple]), startPoint: .top, endPoint: .bottom))
         .cornerRadius(10)
         .shadow(radius: 5)
-        .frame(maxWidth: 1000)
+        .frame(maxWidth: 100000)
     }
 }
 
@@ -87,8 +85,8 @@ struct FixtureCardView_Previews: PreviewProvider {
         FixtureCardView(
             homeTeamName: "<HOME TEAM>",
             awayTeamName: "<AWAY TEAM>",
-            homeTeamFlag: Image("englandflag"),
-            awayTeamFlag: Image("iranflag"),
+            homeTeamFlag: "https://hws.dev/paul.jpg",
+            awayTeamFlag: "https://media.api-sports.io/football/teams/34.png",
             matchDate: "<DATE>",
             matchTime: "<TIME> (<TIMEZONE>)",
             matchVenue: Venues(city: "<CITY>", id: 1, name: "<STADIUM>")

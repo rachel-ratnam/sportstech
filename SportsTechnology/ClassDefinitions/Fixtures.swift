@@ -8,7 +8,7 @@
 import Foundation
 
 
-struct Fixture: Codable {
+struct Fixture: Identifiable, Codable {
     var id: Int
     var timezone: String
     var date: String
