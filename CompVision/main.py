@@ -42,6 +42,8 @@ if __name__ == "__main__":
 
     cent_x, cent_y = center_pt
     print("x, y:", cent_x, cent_y)
+
+    # Display commands - remove for API
     cv2.namedWindow("Ground_Img",cv2.WINDOW_NORMAL)
     cv2.imshow("Ground_Img", masked_img)
     cv2.waitKey(0)
