@@ -34,6 +34,7 @@ class NetworkService {
             return try! parseFixtureInfo(data: data)
         }
         else{
+            print("PARSE THE DATA: \(String(describing: data))")
             return try! parseTeamLinups(data: data)
         }
     }
