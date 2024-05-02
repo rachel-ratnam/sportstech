@@ -193,7 +193,10 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 print("Received data from server: \(String(describing: data.fixtures[0].teams["home"]?.name))")
                 DispatchQueue.main.async {
                     //self.createImageForAR(fixtures: data.fixtures)
-                    self.displayFixtures(fixtures: data.fixtures)
+//                    self.displayFixtures(fixtures: data.fixtures)
+                    print("creating images for AR...")
+                    self.renderImageAR(fixtures: data.fixtures)
+                    print("Created images!")
                 }
             } catch {
                 print("An error occurred: \(error)")
@@ -213,10 +216,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 DispatchQueue.main.async {
                     //self.createImageForAR(fixtures: data.fixtures)
                     self.displayLineups(lineupInfo: data)
-                    print("creating images for AR...")
-                    self.renderImageAR(fixtures: data.fixtures)
-                    print("Created images!")
-                    //self.displayFixtures(fixtures: data.fixtures)
                 }
             } catch {
                 print("An error occurred: \(error)")
@@ -241,6 +240,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     func displayLineups(lineupInfo: Any) {
         print("Display the lineup...")
     }
+    
     func renderImageAR(fixtures: [Fixture]) {
             let node = SCNNode()
             
@@ -267,7 +267,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     func createHostingController(for node: SCNNode, fixtures: [Fixture]) {
             // create a hosting controller with SwiftUI view
-            let arVC = UIHostingController(rootView: GamesInfo(fixtures: fixtures))
+            let arVC = UIHostingController(rootView: GamesInfo(fixtures: fixtures) { fixtureId in
+                self.showLineups(fixtureId: fixtureId)
+            })
             
             // Do this on the main thread
             DispatchQueue.main.async {
@@ -304,19 +306,21 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     func createImageForAR(fixtures: [Fixture]) {
         // Create the SwiftUI view you want to render
-        let fixtureListView = GamesInfo(fixtures: fixtures, onTap: { fixtureID in
-            if fixtureID != fixtureID {
-                print("Selected Fixture ID: \(fixtureID)")
-            } else {
-                print("No fixture ID available")
-            }
-        })
-        // Convert the SwiftUI view to a UIImage
-        let hostingController = UIHostingController(rootView: fixtureListView)
-        guard let fixtureListView = hostingController.view else { return }
-        print(fixtures)
+//        let fixtureListView = GamesInfo(fixtures: fixtures, onTap: { fixtureID in
+//            if fixtureID != fixtureID {
+//                print("Selected Fixture ID: \(fixtureID)")
+//            } else {
+//                print("No fixture ID available")
+//            }
+//        })
+//        // Convert the SwiftUI view to a UIImage
+//        let hostingController = UIHostingController(rootView: fixtureListView)
+//        guard let fixtureListView = hostingController.view else { return }
+//        print(fixtures)
         
-        let controller = UIHostingController(rootView: GamesInfo(fixtures: fixtures))
+        let controller = UIHostingController(rootView: GamesInfo(fixtures: fixtures) { fixtureId in
+            self.showLineups(fixtureId: fixtureId)
+        })
             
         // Define the size of the view and a renderer
         let size = CGSize(width: 300, height: 600)

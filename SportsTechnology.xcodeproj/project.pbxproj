@@ -16,7 +16,6 @@
 		3CBD80D22B9F8EE000004F5C /* SportsTechnologyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBD80D12B9F8EE000004F5C /* SportsTechnologyUITests.swift */; };
 		3CBD80D42B9F8EE000004F5C /* SportsTechnologyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBD80D32B9F8EE000004F5C /* SportsTechnologyUITestsLaunchTests.swift */; };
 		68A091B62BCDCECE00312764 /* services.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A091B52BCDCECE00312764 /* services.swift */; };
-		68C5FF422BE40DE900DCF904 /* Lineups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68C5FF412BE40DE900DCF904 /* Lineups.swift */; };
 		D80EA84A2BD2E1AD001C92B0 /* Fixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80EA8492BD2E1AD001C92B0 /* Fixtures.swift */; };
 		D80EA84F2BD2E69B001C92B0 /* Venues.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80EA84E2BD2E69B001C92B0 /* Venues.swift */; };
 		D80EA8512BD2E6A6001C92B0 /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80EA8502BD2E6A6001C92B0 /* Status.swift */; };
@@ -497,7 +496,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 793QY8AV8M;
+				DEVELOPMENT_TEAM = 25N7GFB35A;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SportsTechnology/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
@@ -513,7 +512,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = cmu.SportsTechnology1;
+				PRODUCT_BUNDLE_IDENTIFIER = cmu.SportsTechnology;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -528,7 +527,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 793QY8AV8M;
+				DEVELOPMENT_TEAM = 25N7GFB35A;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SportsTechnology/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
@@ -544,7 +543,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = cmu.SportsTechnology1;
+				PRODUCT_BUNDLE_IDENTIFIER = cmu.SportsTechnology;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
