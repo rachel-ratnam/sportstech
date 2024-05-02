@@ -19,7 +19,7 @@ class NetworkService {
     var urlString: String = "http://10.0.0.130:3001" // NodeJS server ip
     
     /* API Endpoints for NodeJS server */
-    static func fetchData(query: String) async throws -> LeagueInfo {
+    static func fetchData(query: String) async throws -> Any {
         guard let url = URL(string: NetworkService().urlString + query) else {
             throw NSError(domain: "NetworkService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
@@ -34,9 +34,77 @@ class NetworkService {
             return try! parseFixtureInfo(data: data)
         }
         else{
-            print("PARSE THE DATA: \(String(describing: data))")
+            return try! parseTeamLinups(data: data)
         }
-        return try! parseFixtureInfo(data: data)
+    }
+    
+    static func parseTeamLinups(data: Data) throws -> [Lineup]{
+        var team_lineups: [Lineup] = []
+        do {
+            if let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
+                for team in jsonObject {
+                    var team_info: Lineup = Lineup()
+                    print("Team parsing...")
+                    if let info = team["team"] as? [String: Any] {
+                        team_info.id = info["id"] as! Int
+                        team_info.name = info["name"] as! String
+                    }
+                    
+                    if let form = team["formation"] as? String {
+                        team_info.formation = form
+                    }
+                    
+                    if let coach = team["coach"] as? [String: Any] {
+                        team_info.coach_name = coach["name"] as! String
+                        team_info.coach_photo = coach["photo"] as! String
+                    }
+                    
+                    if let array = team["startXI"] as? [[String: Any]] {
+                        for element in array {
+                            if let info = element["player"] as? [String: Any] {
+                                var player: Player = Player()
+                                
+                                player.id = info["id"] as! Int
+                                player.grid = info["grid"] as? String ?? ""
+                                player.name = info["name"] as! String
+                                player.number = info["number"] as! Int
+                                player.pos = info["pos"] as! String
+                                
+                                team_info.start_XI.append(player)
+                            }
+                        }
+                    } else {
+                        print("Error in parsing starting XI")
+                    }
+                    
+                    if let array = team["substitutes"] as? [[String: Any]] {
+                        for element in array {
+                            if let info = element["player"] as? [String: Any] {
+                                var player: Player = Player()
+                                
+                                player.id = info["id"] as! Int
+                                player.grid = info["grid"] as? String ?? ""
+                                player.name = info["name"] as! String
+                                player.number = info["number"] as! Int
+                                player.pos = info["pos"] as! String
+                                
+                                team_info.subs.append(player)
+                            }
+                        }
+                    } else {
+                        print("Error in parsing substitutes")
+                    }
+                    
+                    team_lineups.append(team_info)
+                }
+            } else {
+                throw NSError(domain: "NetworkService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Invalid JSON structure"])
+            }
+        } catch {
+            throw NSError(domain: "NetworkService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Error parsing JSON: \(error.localizedDescription)"])
+        }
+        
+        return team_lineups
     }
     
     static func parseFixtureInfo(data: Data) throws -> LeagueInfo {
@@ -104,7 +172,7 @@ class NetworkService {
         do {
             print("In services, getting data...")
             let data = try await self.fetchData(query: "/get-games?from=\(from)&to=\(to)")
-            return data
+            return data as! LeagueInfo
         } catch {
             // Handle error here
             print("Error: \(error.localizedDescription)")
