@@ -25,6 +25,7 @@
 		D80EA85A2BD30295001C92B0 /* FixtureViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80EA8592BD30295001C92B0 /* FixtureViews.swift */; };
 		D86DD0662BD347DD00C1E55B /* GamesInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D86DD0652BD347DD00C1E55B /* GamesInfo.swift */; };
 		D8C433A62BE419AA00C0E1A7 /* Lineups.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8C433A52BE419AA00C0E1A7 /* Lineups.swift */; };
+		D8CB7DBE2BE44ADB00885A38 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8CB7DBD2BE44ADB00885A38 /* Player.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +69,7 @@
 		D86DD0652BD347DD00C1E55B /* GamesInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamesInfo.swift; sourceTree = "<group>"; };
 		D86DD0672BD5B65200C1E55B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D8C433A52BE419AA00C0E1A7 /* Lineups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lineups.swift; sourceTree = "<group>"; };
+		D8CB7DBD2BE44ADB00885A38 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,6 +167,7 @@
 				D80EA8542BD2E71C001C92B0 /* WinnerStatus.swift */,
 				D80EA8562BD2EC26001C92B0 /* LeagueInfo.swift */,
 				D8C433A52BE419AA00C0E1A7 /* Lineups.swift */,
+				D8CB7DBD2BE44ADB00885A38 /* Player.swift */,
 			);
 			path = ClassDefinitions;
 			sourceTree = "<group>";
@@ -316,6 +319,7 @@
 				68A091B62BCDCECE00312764 /* services.swift in Sources */,
 				3CBD80B92B9F8EDF00004F5C /* ViewController.swift in Sources */,
 				D8C433A62BE419AA00C0E1A7 /* Lineups.swift in Sources */,
+				D8CB7DBE2BE44ADB00885A38 /* Player.swift in Sources */,
 				D80EA8532BD2E6C1001C92B0 /* Team.swift in Sources */,
 				3CBD80B52B9F8EDF00004F5C /* AppDelegate.swift in Sources */,
 				D80EA8552BD2E71C001C92B0 /* WinnerStatus.swift in Sources */,

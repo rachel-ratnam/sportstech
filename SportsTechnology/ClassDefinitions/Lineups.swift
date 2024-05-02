@@ -8,14 +8,22 @@
 import Foundation
 
 struct Lineup: Identifiable, Codable {
-    var city: String
     var id: Int
     var name: String
+    var formation: String
+    var start_XI: [Player]
+    var subs: [Player]
+    var coach_name: String
+    var coach_photo: String
     
     // Default initializer for Venues
-    init(city: String = "", id: Int = 0, name: String = "") {
-        self.city = city
-        self.name = name
+    init(id: Int = 0, name: String = "", formation: String = "", start_XI: [Player] = [], subs: [Player] = [], coach_name: String = "", coach_photo: String = "") {
         self.id = id
+        self.name = name
+        self.formation = formation
+        self.start_XI = start_XI
+        self.subs = subs
+        self.coach_name = coach_name
+        self.coach_photo = coach_photo
     }
 }
