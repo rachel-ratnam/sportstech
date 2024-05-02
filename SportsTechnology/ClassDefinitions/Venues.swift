@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Venues: Codable {
+struct Venues: Identifiable, Codable {
     var city: String
     var id: Int
     var name: String

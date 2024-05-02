@@ -25,9 +25,7 @@ struct GamesInfo: View {
                         matchDate: fixture.date,
                         matchTime: fixture.timezone,
                         matchVenue: fixture.venue
-                        )
-                        .frame(width: 1000, height: 100) // Set the frame as needed
-                    
+                        )                    
                 }
                 .padding()
             }

@@ -159,10 +159,10 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 print("Fetching data...")
                 let data = try await NetworkService.fetchAllGamesByDate(from: "2024-04-13", to: "2024-04-13")
                 //addFixtureNodes(data: data)
-                print("Received data from server: \(String(describing: data.fixtures[0].teams["home"]))")
+                print("Received data from server: \(String(describing: data.fixtures[0].teams["home"]?.name))")
                 DispatchQueue.main.async {
-                    //self.createImageForAR(fixtures: data.fixtures)
-                    self.displayFixtures(fixtures: data.fixtures)
+                    self.createImageForAR(fixtures: data.fixtures)
+                    //self.displayFixtures(fixtures: data.fixtures)
                 }
             } catch {
                 print("An error occurred: \(error)")
@@ -173,6 +173,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     func displayFixtures(fixtures: [Fixture]) {
         // Create a SwiftUI view with the fixture information
         let fixtureView = GamesInfo(fixtures: fixtures)
+            .padding()
 
         // Create a UIHostingController with the SwiftUI view
         let hostingController = UIHostingController(rootView: fixtureView)
@@ -187,15 +188,20 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Convert the SwiftUI view to a UIImage
         let hostingController = UIHostingController(rootView: fixtureListView)
         guard let fixtureListView = hostingController.view else { return }
+        
+        // Assume the SwiftUI view's frame for now, you might need to adjust this
+//        hostingController.view.frame = CGRect(origin: .zero, size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
+        
         fixtureListView.frame = CGRect(x: 0, y: 0, width: FIELD_WIDTH ?? 0.6, height: FIELD_HEIGHT ?? 1.0)
         fixtureListView.backgroundColor = .clear
-        
         // Render the view to an image
-        let image = renderViewToImage(view: fixtureListView)
-
-        // Use the image in your AR scene
-        if let image = image {
-            addImageToARScene(image: image)
+        guard let image = renderViewToImage(view: fixtureListView)else {
+            print("Image rendering failed")
+            return
+        }
+        
+        DispatchQueue.main.async {
+            self.addImageToARScene(image: image)
         }
     }
     
@@ -212,14 +218,15 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             print("Canvas node not found.")
             return
         }
-        let planeGeometry = SCNPlane(width: FIELD_WIDTH ?? 0.6, height: CGFloat(image.size.height / image.size.width))
+
+        let planeGeometry = SCNPlane(width: FIELD_WIDTH ?? 0.6, height: FIELD_HEIGHT ?? 1.0)
         planeGeometry.firstMaterial?.diffuse.contents = image
-        planeGeometry.firstMaterial?.lightingModel = .constant // Avoids lighting changes
         planeGeometry.firstMaterial?.isDoubleSided = true
 
         let planeNode = SCNNode(geometry: planeGeometry)
-        planeNode.position = SCNVector3(0, 0, 0.06)
-        
+//        planeNode.position = SCNVector3(0, 0, 0.06)
+        planeNode.position = canvasNode.position
+        planeNode.position.z += 0.06
         if let currentFrame = self.sceneView.session.currentFrame {
             // Use the camera's current transform
             let cameraTransform = currentFrame.camera.transform

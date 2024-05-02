@@ -28,7 +28,7 @@ struct FixtureCardView: View {
                 .foregroundColor(.white)
             HStack {
                 // Home Team Flag
-                AsyncImage(url: URL(string: homeTeamFlag)) { phase in
+                AsyncImage(url: URL(string: awayTeamFlag)) { phase in
                     switch phase {
                     case .success(let image):
                         image.resizable().aspectRatio(contentMode: .fit)
@@ -50,13 +50,17 @@ struct FixtureCardView: View {
                     .foregroundColor(.white)
                 Spacer()
                 
-                AsyncImage(url: URL(string: awayTeamFlag)) { image in
-                    image.resizable()
-                } placeholder: {
-                    Image("iranflag")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 50, height: 30)
+                AsyncImage(url: URL(string: homeTeamFlag)) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image.resizable().aspectRatio(contentMode: .fit)
+                    case .failure(_):
+                        Image(systemName: "photo") // Or a default placeholder image
+                    case .empty:
+                        ProgressView()
+                    @unknown default:
+                        EmptyView()
+                    }
                 }
                 .scaledToFit()
                 .frame(width: 50, height: 30)

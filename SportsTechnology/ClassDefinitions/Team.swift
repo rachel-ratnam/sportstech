@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct Team: Codable {
+struct Team: Identifiable, Codable {
     var winner: WinnerStatus?
     var logoURL: String
     var name: String
