@@ -17,6 +17,8 @@ struct FixtureCardView: View {
     var matchDate: String
     var matchTime: String
     var matchVenue: Venues
+    var onTap: (Int) -> Void
+    var id: Int?
     
     var body: some View {
         VStack(spacing: 5) {
@@ -80,6 +82,9 @@ struct FixtureCardView: View {
         .cornerRadius(10)
         .shadow(radius: 5)
         .frame(maxWidth: 100000)
+        .onTapGesture {
+            onTap(id ?? 592872)  // Call the onTap function when the card is tapped
+        }
     }
 }
 
@@ -93,7 +98,14 @@ struct FixtureCardView_Previews: PreviewProvider {
             awayTeamFlag: "https://media.api-sports.io/football/teams/34.png",
             matchDate: "<DATE>",
             matchTime: "<TIME> (<TIMEZONE>)",
-            matchVenue: Venues(city: "<CITY>", id: 1, name: "<STADIUM>")
+            matchVenue: Venues(city: "<CITY>", id: 1, name: "<STADIUM>"),
+            onTap: { fixtureID in
+                if fixtureID != fixtureID {
+                    print("Selected Fixture ID: \(fixtureID)")
+                } else {
+                    print("No fixture ID available")
+                }
+            }
         )
         .previewLayout(.sizeThatFits)
         .padding()

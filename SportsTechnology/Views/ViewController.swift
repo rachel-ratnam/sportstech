@@ -161,8 +161,27 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 //addFixtureNodes(data: data)
                 print("Received data from server: \(String(describing: data.fixtures[0].teams["home"]?.name))")
                 DispatchQueue.main.async {
-                    self.createImageForAR(fixtures: data.fixtures)
-                    //self.displayFixtures(fixtures: data.fixtures)
+                    //self.createImageForAR(fixtures: data.fixtures)
+                    self.displayFixtures(fixtures: data.fixtures)
+                }
+            } catch {
+                print("An error occurred: \(error)")
+            }
+        }
+    }
+    
+    @objc func showLineups(fixtureId: Int) {
+        print("\(fixtureId) fixture was selected.")
+        Task {
+            print("Beginning Task...")
+            do {
+                print("Fetching data...")
+                let data = try await NetworkService.fetchTeamLineups(fixtureId: fixtureId)
+                //addFixtureNodes(data: data)
+                print("Received data from server: \(String(describing: data))")
+                DispatchQueue.main.async {
+                    //self.createImageForAR(fixtures: data.fixtures)
+                    self.displayLineups(lineupInfo: data)
                 }
             } catch {
                 print("An error occurred: \(error)")
@@ -172,19 +191,31 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     func displayFixtures(fixtures: [Fixture]) {
         // Create a SwiftUI view with the fixture information
-        let fixtureView = GamesInfo(fixtures: fixtures)
-            .padding()
+        let fixtureView = GamesInfo(fixtures: fixtures) { fixtureId in
+            self.showLineups(fixtureId: fixtureId)
+        }
+        .padding()
 
         // Create a UIHostingController with the SwiftUI view
         let hostingController = UIHostingController(rootView: fixtureView)
-
+        
         // Present or add the hosting controller's view to your interface
         present(hostingController, animated: true)
     }
     
+    func displayLineups(lineupInfo: Any) {
+        print("Display the lineup...")
+    }
+    
     func createImageForAR(fixtures: [Fixture]) {
         // Create the SwiftUI view you want to render
-        let fixtureListView = GamesInfo(fixtures: fixtures)
+        let fixtureListView = GamesInfo(fixtures: fixtures, onTap: { fixtureID in
+            if fixtureID != fixtureID {
+                print("Selected Fixture ID: \(fixtureID)")
+            } else {
+                print("No fixture ID available")
+            }
+        })
         // Convert the SwiftUI view to a UIImage
         let hostingController = UIHostingController(rootView: fixtureListView)
         guard let fixtureListView = hostingController.view else { return }

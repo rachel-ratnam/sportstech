@@ -16,7 +16,7 @@ struct GameInfo {
 
 class NetworkService {
     
-    var urlString: String = "http://192.168.1.224:3001" // NodeJS server ip
+    var urlString: String = "http://10.0.0.130:3001" // NodeJS server ip
     
     /* API Endpoints for NodeJS server */
     static func fetchData(query: String) async throws -> LeagueInfo {
@@ -30,15 +30,20 @@ class NetworkService {
             throw NSError(domain: "NetworkService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Invalid response or status code"])
         }
             
-        return try! parseData(data: data)
+        if(query.hasPrefix("/get-games")){
+            return try! parseFixtureInfo(data: data)
+        }
+        else{
+            print("PARSE THE DATA: \(String(describing: data))")
+        }
+        return try! parseFixtureInfo(data: data)
     }
     
-    static func parseData(data: Data) throws -> LeagueInfo {
+    static func parseFixtureInfo(data: Data) throws -> LeagueInfo {
         var leagueInfo: LeagueInfo = LeagueInfo()
 
             do {
                 if let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
-                    
                     for game in jsonObject {
                         var fixtureInfo: Fixture = Fixture()
 
@@ -147,6 +152,16 @@ class NetworkService {
         }
     }
     
+    static func fetchTeamLineups(team: String) async throws -> Any {
+        do {
+            let data = try await self.fetchData(query: "/get-team-stats/\(team)")
+            return data
+        } catch {
+            print("Error: \(error.localizedDescription)")
+            throw error
+        }
+    }
+    
     static func fetchGameStats(fixtureId: Int) async throws -> Any {
         do {
             let data = try await self.fetchData(query: "/get-game-stats/\(fixtureId)")
@@ -160,6 +175,16 @@ class NetworkService {
     static func fetchGameEvents(fixtureId: Int) async throws -> Any {
         do {
             let data = try await self.fetchData(query: "/get-game-events/\(fixtureId)")
+            return data
+        } catch {
+            print("Error: \(error.localizedDescription)")
+            throw error
+        }
+    }
+    
+    static func fetchTeamLineups(fixtureId: Int) async throws -> Any {
+        do {
+            let data = try await self.fetchData(query: "/get-team-lineups?id=\(fixtureId)")
             return data
         } catch {
             print("Error: \(error.localizedDescription)")
