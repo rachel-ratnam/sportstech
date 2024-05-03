@@ -18,27 +18,32 @@ struct PlayerStatsView: View {
         NavigationView {
             VStack {
                 HStack {
-                    Button(action: onClose) {
-                                    Label("Close", systemImage: "xmark.circle.fill")
-                                        .labelStyle(IconOnlyLabelStyle())
-                                        .font(.title)
-                                        .padding()
-                                        .foregroundColor(.white)
-                                        .background(Color.black.opacity(0.6))
-                                        .clipShape(Circle())
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                                .padding()
-                    // Player Image
-                    AsyncImage(url: URL(string: player.photo)) { image in
-                        image.resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } placeholder: {
-                        Color.gray.opacity(0.3)
-                            .overlay(Text("Loading Image..."))
+                    VStack {
+                        Button(action: onClose) {
+                                                Label("Close", systemImage: "xmark.circle.fill")
+                                                    .labelStyle(IconOnlyLabelStyle())
+                                                    .font(.system(size: 14))  // Smaller font size
+                                                    .padding(8)  // Smaller padding to reduce overall size
+                                                    .foregroundColor(.white)
+                                                    .background(Color.black.opacity(0.6))
+                                                    .clipShape(Circle())
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                            .padding(.leading, 10)  // Adjust padding around the button as needed
+                        // Player Image
+                        Spacer()
+                        AsyncImage(url: URL(string: player.photo)) { image in
+                            image.resizable()
+                                .aspectRatio(contentMode: .fit)
+                        } placeholder: {
+                            Color.gray.opacity(0.3)
+                                .overlay(Text("Loading Image..."))
+                        }
+                        .frame(width: 80, height: 80)
+                        .clipShape(Circle())
+                        Spacer()
                     }
-                    .frame(width: 100, height: 100)
-                    .clipShape(Circle())
+                    
 
                     // Player Stats
                     VStack(alignment: .leading, spacing: 5) {
