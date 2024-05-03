@@ -10,49 +10,49 @@ import SwiftUI
 
 struct PlayerView: View {
     var player: Player
+    var action: () -> Void  // Add an action to handle taps
     
     var body: some View {
         VStack {
             Text("\(player.number)")
                 .fontWeight(.bold)
-                .font(.system(size: 12)) // Smaller font size for the player number
+                .font(.system(size: 12))
             Text(player.name)
-                .font(.system(size: 10)) // Smaller font size for the player name
+                .font(.system(size: 10))
                 .lineLimit(1)
-                .frame(maxWidth: 60) // Restrict name width to fit in smaller cells
+                .frame(maxWidth: 60)
             Text(player.pos)
-                .font(.system(size: 8)) // Even smaller font for the position
+                .font(.system(size: 8))
                 .foregroundColor(.secondary)
         }
-        .padding(4) // Reduced padding
-        .frame(width: 70, height: 60) // Smaller frame for each player cell
-        .background(Color.blue.opacity(0.75))  // Changed to a blue background for better visibility
+        .padding(4)
+        .frame(width: 70, height: 60)
+        .background(Color.blue.opacity(0.75))
         .cornerRadius(6)
         .overlay(
             RoundedRectangle(cornerRadius: 6)
-                .stroke(Color.white, lineWidth: 1)  // Changed line width for better visibility
+                .stroke(Color.white, lineWidth: 1)
         )
+        .onTapGesture {
+            action()
+        }
     }
 }
 
 struct FieldView: View {
     var lineup: Lineup
     var home: Bool
-    
+    @Binding var selectedPlayer: Player?  // Binding to handle selected player
+
     var body: some View {
         GeometryReader { geometry in
             let width = geometry.size.width
             let height = geometry.size.height
-            
-            // Define the grid structure
-            let rows = 5  // Maximum number of rows
-            let columns = 5  // Maximum number of columns
-            
-            // Soccer field background
+            let rows = 5
+            let columns = 5
             let backgroundGradient = LinearGradient(gradient: Gradient(colors: [Color.green.opacity(0.6), Color.green]), startPoint: .top, endPoint: .bottom)
             
             ZStack {
-                // Background
                 backgroundGradient
                     .frame(width: width, height: height)
                     .cornerRadius(10)
@@ -61,7 +61,6 @@ struct FieldView: View {
                             .stroke(Color.white, lineWidth: 1)
                     )
 
-                // Player positions
                 HStack(alignment: .center, spacing: 10) {
                     if !home {
                         Spacer()
@@ -78,7 +77,9 @@ struct FieldView: View {
                                 let column = home ? colIndex : columns - 1 - colIndex
                                 let gridIndex = "\(row + 1):\(column + 1)"
                                 if let player = lineup.start_XI.first(where: { $0.grid == gridIndex }) {
-                                    PlayerView(player: player)
+                                    PlayerView(player: player) {
+                                        self.selectedPlayer = player
+                                    }
                                 } else {
                                     Spacer()  // Empty space for no player in this grid position
                                 }
@@ -98,19 +99,25 @@ struct FieldView: View {
     }
 }
 
-
-
 struct MatchView: View {
     var homeLineup: Lineup
     var awayLineup: Lineup
+    @State private var selectedPlayer: Player?  // State to track selected player
 
     var body: some View {
         HStack(spacing: 20) {
-            FieldView(lineup: homeLineup, home: true)
-            FieldView(lineup: awayLineup, home: false)
+            FieldView(lineup: homeLineup, home: true, selectedPlayer: $selectedPlayer)
+            FieldView(lineup: awayLineup, home: false, selectedPlayer: $selectedPlayer)
+        }
+        .sheet(item: $selectedPlayer) { player in
+            PlayerStatsView(player: player) {
+                self.selectedPlayer = nil  // This will close the modal
+            }
         }
     }
 }
+
+
 
 struct MatchView_Previews: PreviewProvider {
     static var previews: some View {
