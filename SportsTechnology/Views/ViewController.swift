@@ -278,26 +278,28 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     func createHostingControllerForLineups(for node: SCNNode, lineupInfo: [Lineup], fixtureId: Int) {
             // create a hosting controller with SwiftUI view
         let arVC = UIHostingController(rootView: MatchView(homeLineup: lineupInfo[0], awayLineup: lineupInfo[1], fixtureId: fixtureId, showPlayerStats: { fixtureId, playerId in
-            self.showPlayerStats(fixtureId: fixtureId, playerId: playerId)
-        }))
+                self.showPlayerStats(fixtureId: fixtureId, playerId: playerId)
+            })
+        )
             
-            // Do this on the main thread
-            DispatchQueue.main.async {
-                arVC.willMove(toParent: self)
-                // make the hosting VC a child to the main view controller
-                self.addChild(arVC)
-                arVC.view.frame = CGRect(x: 0, y: 0, width: 1000, height: 500) // Landscape dimensions
+        // Do this on the main thread
+        DispatchQueue.main.async {
+            arVC.willMove(toParent: self)
+            // make the hosting VC a child to the main view controller
+            self.addChild(arVC)
+            arVC.view.frame = CGRect(x: 0, y: 0, width: 1000, height: 500) // Landscape dimensions
 
-                // set the pixel size of the Card View
-                //arVC.view.frame = CGRect(x: 0, y: 0, width: 300, height: 300)
-                
-                // add the ar card view as a subview to the main view
-                self.view.addSubview(arVC.view)
-                
-                // render the view on the plane geometry as a material
-                self.showLineupsAR(hostingVC: arVC, on: node)
-            }
+            // set the pixel size of the Card View
+            //arVC.view.frame = CGRect(x: 0, y: 0, width: 300, height: 300)
+            
+            // add the ar card view as a subview to the main view
+            self.view.addSubview(arVC.view)
+            
+            // render the view on the plane geometry as a material
+            self.showLineupsAR(hostingVC: arVC, on: node)
+        }
     }
+    
     func showLineupsAR(hostingVC: UIHostingController<MatchView>, on node: SCNNode) {
         // create a new material
         let material = SCNMaterial()
@@ -321,8 +323,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         // get the name of the image from the anchor
 
-        let plane = SCNPlane(width: 200,
-                             height: 200)
+        let plane = SCNPlane(width: 350,
+                             height: 350)
         
         
         let planeNode = SCNNode(geometry: plane)
@@ -330,7 +332,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // so we have to rotate it on X-axis by -90 degrees to
         // make it flat to the image detected
         //planeNode.eulerAngles.x = -.pi / 2
-        planeNode.position.z -= CANVAS_Z_POS
+        planeNode.position.z -= CANVAS_Z_POS - 1
         sceneView.isUserInteractionEnabled = true
         createHostingControllerForPlayerStats(for: planeNode, player: player)
         
@@ -385,8 +387,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             
             // get the name of the image from the anchor
     
-            let plane = SCNPlane(width: 200,
-                                 height: 200)
+            let plane = SCNPlane(width: 400,
+                                 height: 400)
             
             
             let planeNode = SCNNode(geometry: plane)
