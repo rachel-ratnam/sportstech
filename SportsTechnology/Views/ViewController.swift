@@ -209,11 +209,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             do {
                 print("Fetching data...")
                 let data = try await NetworkService.fetchTeamLineups(fixtureId: fixtureId) as? [Lineup]
-                //addFixtureNodes(data: data)
                 print("Received data from server: \(String(describing: data))")
                 DispatchQueue.main.async {
-                    //self.createImageForAR(fixtures: data.fixtures)
-                    self.displayLineups(lineupInfo: data as Any)
+                    self.displayLineups(lineupInfo: (data as [Lineup]?)!)
                 }
             } catch {
                 print("An error occurred: \(error)")
@@ -240,7 +238,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
     
     func displayFixtures(fixtures: [Fixture]) {
-        // Create a SwiftUI view with the fixture information
         let fixtureView = GamesInfo(fixtures: fixtures) { fixtureId in
             self.showLineups(fixtureId: fixtureId)
         }
@@ -253,10 +250,64 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         present(hostingController, animated: true)
     }
     
-    func displayLineups(lineupInfo: Any) {
+    func displayLineups(lineupInfo: [Lineup]) {
+        print("Removing other nodes...")
+        sceneView.scene.rootNode.enumerateChildNodes { (node, stop) in
+                node.removeFromParentNode()
+        }
+        
         print("Display the lineup...")
-        print("showing player stats...")
-        self.showPlayerStats(fixtureId: 592872, playerId: 617)
+        
+        let node = SCNNode()
+
+        let plane = SCNPlane(width: 200,
+                             height: 200)
+        
+        
+        let planeNode = SCNNode(geometry: plane)
+        planeNode.position.z -= 200
+        createHostingControllerForLineups(for: planeNode, lineupInfo: lineupInfo)
+        
+        node.addChildNode(planeNode)
+        sceneView.scene.rootNode.addChildNode(node)
+        //self.showPlayerStats(fixtureId: 592872, playerId: 617)
+    }
+    
+    func createHostingControllerForLineups(for node: SCNNode, lineupInfo: [Lineup]) {
+            // create a hosting controller with SwiftUI view
+            let arVC = UIHostingController(rootView: MatchView(homeLineup: lineupInfo[0], awayLineup: lineupInfo[1]))
+            
+            // Do this on the main thread
+            DispatchQueue.main.async {
+                arVC.willMove(toParent: self)
+                // make the hosting VC a child to the main view controller
+                self.addChild(arVC)
+                arVC.view.frame = CGRect(x: 0, y: 0, width: 800, height: 400) // Landscape dimensions
+
+                // set the pixel size of the Card View
+                //arVC.view.frame = CGRect(x: 0, y: 0, width: 300, height: 300)
+                
+                // add the ar card view as a subview to the main view
+                self.view.addSubview(arVC.view)
+                
+                // render the view on the plane geometry as a material
+                self.showLineupsAR(hostingVC: arVC, on: node)
+            }
+    }
+    func showLineupsAR(hostingVC: UIHostingController<MatchView>, on node: SCNNode) {
+        // create a new material
+        let material = SCNMaterial()
+        
+        // this allows the card to render transparent parts the right way
+        hostingVC.view.isOpaque = false
+        
+        // set the diffuse of the material to the view of the Hosting View Controller
+        material.diffuse.contents = hostingVC.view
+        
+        // Set the material to the geometry of the node (plane geometry)
+        node.geometry?.materials = [material]
+        
+        hostingVC.view.backgroundColor = UIColor.clear
     }
     
     func displayPlayerStats(data: Any) {
@@ -428,109 +479,5 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.scene.rootNode.addChildNode(planeNode)
     }
     
-    func addFixtureNodes(data: LeagueInfo) {
-        for game in data.fixtures {
-            let fixtureNode = createFixtureNode(game: game)
-            sceneView.scene.rootNode.addChildNode(fixtureNode)
-        }
-    }
-
-    func createFixtureNode(game: Fixture) -> SCNNode {
-        let fixtureTexture = createFixtureTexture(game: game)
-        let plane = SCNPlane(width: FIELD_WIDTH ?? 0.6, height: FIELD_HEIGHT ?? 1.0)
-        plane.firstMaterial?.diffuse.contents = fixtureTexture
-        let fixtureNode = SCNNode(geometry: plane)
-        // Use the camera transform to place the node in front of the camera
-        if let currentFrame = self.sceneView.session.currentFrame {
-                // Use the camera's current transform
-                let cameraTransform = currentFrame.camera.transform
-                var translationMatrix = matrix_identity_float4x4
-                // Define how far away from the camera you want to place the node (e.g., 0.5 meters in front)
-                translationMatrix.columns.3.z = -0.5
-                // Combine the camera and translation matrices
-                let modifiedTransform = simd_mul(cameraTransform, translationMatrix)
-                fixtureNode.simdTransform = modifiedTransform
-            }
-
-        return fixtureNode
-    }
-    
-    func createFixtureTexture(game: Fixture) -> UIImage {
-        // Define the size of the image you want to create.
-        let imageSize = CGSize(width: 600, height: 100) // Example size, you'll want to scale this appropriately.
-        
-        // Begin image context
-        UIGraphicsBeginImageContextWithOptions(imageSize, false, 0)
-        guard let context = UIGraphicsGetCurrentContext() else {
-            return UIImage()
-        }
-        
-        // Draw background
-        let backgroundColor = UIColor.white
-        backgroundColor.set()
-        context.fill(CGRect(origin: .zero, size: imageSize))
-        
-        // Set up the attributes for drawing text
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 16),
-            .foregroundColor: UIColor.black
-        ]
-        
-        // Draw the home team name
-        if let homeTeamInfo = game.teams["home"],
-           let awayTeamInfo = game.teams["away"] {
-            
-            // Extract the team names from the nested dictionaries
-            let homeTeamName = homeTeamInfo.name
-            let awayTeamName = awayTeamInfo.name
-            
-            let homeTeamRect = CGRect(x: 10, y: 15, width: imageSize.width / 2 - 10, height: 20)
-            homeTeamName.draw(in: homeTeamRect, withAttributes: attributes)
-            
-            let awayTeamRect = CGRect(x: imageSize.width / 2, y: 15, width: imageSize.width / 2 - 10, height: 20)
-            awayTeamName.draw(in: awayTeamRect, withAttributes: attributes)
-        }
-            // Draw the match time
-        let matchTimeString = game.date as String
-            let matchTimeRect = CGRect(x: 10, y: 40, width: imageSize.width - 20, height: 20)
-            matchTimeString.draw(in: matchTimeRect, withAttributes: attributes)
-            
-            // Draw the goals
-            if let homeGoals = game.goals["home"], let awayGoals = game.goals["away"] {
-                let goalsString = "\(homeGoals) - \(awayGoals)"
-                let goalsRect = CGRect(x: 10, y: 65, width: imageSize.width - 20, height: 20)
-                goalsString.draw(in: goalsRect, withAttributes: attributes)
-            }
-            
-            // End the graphics context and return the image
-            let image = UIGraphicsGetImageFromCurrentImageContext()
-            UIGraphicsEndImageContext()
-            
-            return image ?? UIImage()
-    }
-    
-    func createTeam(x: CGFloat, y: CGFloat, z: CGFloat, color: UIColor) -> SCNNode {
-        let plane = SCNPlane(width: (FIELD_WIDTH ?? 0.6), height: (FIELD_HEIGHT ?? 1.0)/2) // Adjust dimensions as needed
-        plane.firstMaterial?.diffuse.contents = color
-        let planeNode = SCNNode(geometry: plane)
-        planeNode.position = SCNVector3(x, y, z)
-        return planeNode
-    }
-    
-    func addTeams() {
-        // Find the canvas node
-        guard let canvasNode = sceneView.scene.rootNode.childNode(withName: "canvasNode", recursively: true) else {
-            print("Canvas node not found.")
-            return
-        }
-
-        // Create a new node to hold both teams
-        let teamsNode = SCNNode()
-        teamsNode.addChildNode(createTeam(x: 0, y: -(FIELD_HEIGHT ?? 1.0)/4, z: 0.06, color: UIColor.red))
-        teamsNode.addChildNode(createTeam(x: 0, y: (FIELD_HEIGHT ?? 1.0)/4, z: 0.06, color: UIColor.blue))
-        
-        // Add the planes node to the canvas node
-        canvasNode.addChildNode(teamsNode)
-    }
 }
 

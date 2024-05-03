@@ -16,7 +16,7 @@ struct GameInfo {
 
 class NetworkService {
     
-    var urlString: String = "http://10.0.0.130:3001" // NodeJS server ip
+    var urlString: String = "http://10.0.0.7:3001" // NodeJS server ip
     
     /* API Endpoints for NodeJS server */
     static func fetchData(query: String, playerId: Int = 0) async throws -> Any {
@@ -29,15 +29,15 @@ class NetworkService {
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw NSError(domain: "NetworkService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Invalid response or status code"])
         }
-            
+        print(query)
         if(query.hasPrefix("/get-games")){
             return try! parseFixtureInfo(data: data)
         }
-        else if(query.hasPrefix("get-team-lineup")){
-            return try! parseTeamLinups(data: data)
+        else if(query.hasPrefix("/get-team-lineups")){
+            return try! parseTeamLineups(data: data)
         }
         else{
-            return try! parsePlayerStats(data: data, playerId: playerId)
+            return 0//try! parsePlayerStats(data: data, playerId: playerId)
         }
     }
     
@@ -135,7 +135,7 @@ class NetworkService {
         return player
     }
     
-    static func parseTeamLinups(data: Data) throws -> [Lineup]{
+    static func parseTeamLineups(data: Data) throws -> [Lineup]{
         var team_lineups: [Lineup] = []
         do {
             if let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
@@ -307,15 +307,15 @@ class NetworkService {
         }
     }
     
-    static func fetchTeamLineups(team: String) async throws -> Any {
-        do {
-            let data = try await self.fetchData(query: "/get-team-stats/\(team)")
-            return data
-        } catch {
-            print("Error: \(error.localizedDescription)")
-            throw error
-        }
-    }
+//    static func fetchTeamLineups(team: String) async throws -> Any {
+//        do {
+//            let data = try await self.fetchData(query: "/get-team-stats/\(team)")
+//            return data
+//        } catch {
+//            print("Error: \(error.localizedDescription)")
+//            throw error
+//        }
+//    }
     
     static func fetchGameStats(fixtureId: Int) async throws -> Any {
         do {

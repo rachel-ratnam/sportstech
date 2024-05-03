@@ -45,8 +45,8 @@ struct FieldView: View {
             let height = geometry.size.height
             
             // Define the grid structure
-            let rows = 4  // Maximum number of rows
-            let columns = 4  // Maximum number of columns
+            let rows = 5  // Maximum number of rows
+            let columns = 5  // Maximum number of columns
             
             // Soccer field background
             let backgroundGradient = LinearGradient(gradient: Gradient(colors: [Color.green.opacity(0.6), Color.green]), startPoint: .top, endPoint: .bottom)
