@@ -260,8 +260,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         let node = SCNNode()
 
-        let plane = SCNPlane(width: 200,
-                             height: 200)
+        let plane = SCNPlane(width: 250,
+                             height: 250)
         
         
         let planeNode = SCNNode(geometry: plane)
@@ -282,7 +282,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 arVC.willMove(toParent: self)
                 // make the hosting VC a child to the main view controller
                 self.addChild(arVC)
-                arVC.view.frame = CGRect(x: 0, y: 0, width: 800, height: 400) // Landscape dimensions
+                arVC.view.frame = CGRect(x: 0, y: 0, width: 900, height: 450) // Landscape dimensions
 
                 // set the pixel size of the Card View
                 //arVC.view.frame = CGRect(x: 0, y: 0, width: 300, height: 300)

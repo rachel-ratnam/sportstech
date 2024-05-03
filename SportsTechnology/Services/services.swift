@@ -145,6 +145,7 @@ class NetworkService {
                     if let info = team["team"] as? [String: Any] {
                         team_info.id = info["id"] as! Int
                         team_info.name = info["name"] as! String
+                        team_info.logo = info["logo"] as! String
                     }
                     
                     if let form = team["formation"] as? String {

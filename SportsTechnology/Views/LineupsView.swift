@@ -52,49 +52,86 @@ struct FieldView: View {
             let columns = 5
             let backgroundGradient = LinearGradient(gradient: Gradient(colors: [Color.green.opacity(0.6), Color.green]), startPoint: .top, endPoint: .bottom)
             
-            ZStack {
-                backgroundGradient
-                    .frame(width: width, height: height)
-                    .cornerRadius(10)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.white, lineWidth: 1)
-                    )
-
-                HStack(alignment: .center, spacing: 10) {
-                    if !home {
-                        Spacer()
-                    }
-                    
-                    let filledColumns = Set(lineup.start_XI.map { $0.grid.split(separator: ":").last! }).count
-                    let columnWidth = width / CGFloat(filledColumns)
-                    
-                    ForEach(0..<rows, id: \.self) { index in
-                        let row = home ? index : columns - 1 - index
-                        VStack {
-                            Spacer()
-                            ForEach(0..<columns, id: \.self) { colIndex in
-                                let column = home ? colIndex : columns - 1 - colIndex
-                                let gridIndex = "\(row + 1):\(column + 1)"
-                                if let player = lineup.start_XI.first(where: { $0.grid == gridIndex }) {
-                                    PlayerView(player: player) {
-                                        self.selectedPlayer = player
-                                    }
-                                } else {
-                                    Spacer()  // Empty space for no player in this grid position
-                                }
+            VStack {
+                HStack {
+                    if home {  // Left alignment for the home team
+                        HStack(spacing: 10) {
+                            AsyncImage(url: URL(string: lineup.logo)) { image in
+                                image.resizable()
+                            } placeholder: {
+                                Color.gray.frame(width: 30, height: 30)  // Placeholder while loading or if the URL is invalid
                             }
-                            Spacer()
+                            .frame(width: 30, height: 30)
+                            .clipShape(Circle())
+                            
+                            Text(lineup.name)
+                                .fontWeight(.bold)
                         }
-                        .frame(height: columnWidth)
-                    }
-                    
-                    if home {
-                        Spacer()
+                    } else {  // Right alignment for the away team
+                        HStack(spacing: 10) {
+                            Text(lineup.name)
+                                .fontWeight(.bold)
+                            
+                            AsyncImage(url: URL(string: lineup.logo)) { image in
+                                image.resizable()
+                            } placeholder: {
+                                Color.gray.frame(width: 30, height: 30)  // Placeholder while loading or if the URL is invalid
+                            }
+                            .frame(width: 30, height: 30)
+                            .clipShape(Circle())
+                        }
                     }
                 }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(Color.white)
+                .cornerRadius(8)
+                .shadow(radius: 3)
+
+                ZStack {
+                    backgroundGradient
+                        .frame(width: width, height: height)
+                        .cornerRadius(10)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.white, lineWidth: 1)
+                        )
+
+                    HStack(alignment: .center, spacing: 10) {
+                        if !home {
+                            Spacer()
+                        }
+                        
+                        let filledColumns = Set(lineup.start_XI.map { $0.grid.split(separator: ":").last! }).count
+                        let columnWidth = width / CGFloat(filledColumns)
+                        
+                        ForEach(0..<rows, id: \.self) { index in
+                            let row = home ? index : columns - 1 - index
+                            VStack {
+                                Spacer()
+                                ForEach(0..<columns, id: \.self) { colIndex in
+                                    let column = home ? colIndex : columns - 1 - colIndex
+                                    let gridIndex = "\(row + 1):\(column + 1)"
+                                    if let player = lineup.start_XI.first(where: { $0.grid == gridIndex }) {
+                                        PlayerView(player: player) {
+                                            self.selectedPlayer = player
+                                        }
+                                    } else {
+                                        Spacer()  // Empty space for no player in this grid position
+                                    }
+                                }
+                                Spacer()
+                            }
+                            .frame(height: columnWidth)
+                        }
+                        
+                        if home {
+                            Spacer()
+                        }
+                    }
+                }
+                .frame(width: width, height: height)
             }
-            .frame(width: width, height: height)
         }
     }
 }
