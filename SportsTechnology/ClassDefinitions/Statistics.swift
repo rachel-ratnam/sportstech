@@ -49,7 +49,7 @@ struct Statistics: Identifiable, Codable {
     
     struct Fouls: Codable {
         var drawn: Int = 0
-        var comitted: Int = 0
+        var commited: Int = 0
     }
     
     struct Cards: Codable {

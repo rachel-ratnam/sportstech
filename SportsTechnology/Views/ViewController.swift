@@ -17,6 +17,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     var tapGestureRecognizer: UITapGestureRecognizer?
     var FIELD_WIDTH: CGFloat? // meters
     var FIELD_HEIGHT: CGFloat? //meters
+    var selectedFixtures: LeagueInfo?
+    var chosenTeams: [Lineup]?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -183,7 +185,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         if let buttonNode = sceneView.scene.rootNode.childNode(withName: "buttonNode", recursively: true) {
             buttonNode.removeFromParentNode()
         }
-        //addTeams()
         Task {
             print("Beginning Task...")
             do {
@@ -192,8 +193,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 //addFixtureNodes(data: data)
                 print("Received data from server: \(String(describing: data.fixtures[0].teams["home"]?.name))")
                 DispatchQueue.main.async {
-                    //self.createImageForAR(fixtures: data.fixtures)
-//                    self.displayFixtures(fixtures: data.fixtures)
                     print("creating images for AR...")
                     self.renderImageAR(fixtures: data.fixtures)
                     print("Created images!")
@@ -205,17 +204,34 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
     
     @objc func showLineups(fixtureId: Int) {
-        print("\(fixtureId) fixture was selected.")
         Task {
             print("Beginning Task...")
             do {
                 print("Fetching data...")
-                let data = try await NetworkService.fetchTeamLineups(fixtureId: fixtureId)
+                let data = try await NetworkService.fetchTeamLineups(fixtureId: fixtureId) as? [Lineup]
                 //addFixtureNodes(data: data)
                 print("Received data from server: \(String(describing: data))")
                 DispatchQueue.main.async {
                     //self.createImageForAR(fixtures: data.fixtures)
-                    self.displayLineups(lineupInfo: data)
+                    self.displayLineups(lineupInfo: data as Any)
+                }
+            } catch {
+                print("An error occurred: \(error)")
+            }
+        }
+    }
+    
+    @objc func showPlayerStats(fixtureId: Int, playerId: Int) {
+        Task {
+            print("Beginning Task...")
+            do {
+                print("Fetching data...")
+                let data = try await NetworkService.fetchPlayerStats(fixtureId: fixtureId, playerId: playerId)
+                //addFixtureNodes(data: data)
+                print("Received data from server: \(String(describing: data))")
+                DispatchQueue.main.async {
+                    //self.createImageForAR(fixtures: data.fixtures)
+                    self.displayPlayerStats(data: data)
                 }
             } catch {
                 print("An error occurred: \(error)")
@@ -239,6 +255,12 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     func displayLineups(lineupInfo: Any) {
         print("Display the lineup...")
+        print("showing player stats...")
+        self.showPlayerStats(fixtureId: 592872, playerId: 617)
+    }
+    
+    func displayPlayerStats(data: Any) {
+        print("Display player stats")
     }
     
     func renderImageAR(fixtures: [Fixture]) {
