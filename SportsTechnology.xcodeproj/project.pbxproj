@@ -16,6 +16,7 @@
 		3CBD80D22B9F8EE000004F5C /* SportsTechnologyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBD80D12B9F8EE000004F5C /* SportsTechnologyUITests.swift */; };
 		3CBD80D42B9F8EE000004F5C /* SportsTechnologyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBD80D32B9F8EE000004F5C /* SportsTechnologyUITestsLaunchTests.swift */; };
 		68A091B62BCDCECE00312764 /* services.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A091B52BCDCECE00312764 /* services.swift */; };
+		68C5FF592BE4619900DCF904 /* LineupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68C5FF582BE4619900DCF904 /* LineupsView.swift */; };
 		D80EA84A2BD2E1AD001C92B0 /* Fixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80EA8492BD2E1AD001C92B0 /* Fixtures.swift */; };
 		D80EA84F2BD2E69B001C92B0 /* Venues.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80EA84E2BD2E69B001C92B0 /* Venues.swift */; };
 		D80EA8512BD2E6A6001C92B0 /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80EA8502BD2E6A6001C92B0 /* Status.swift */; };
@@ -58,7 +59,7 @@
 		3CBD80D12B9F8EE000004F5C /* SportsTechnologyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SportsTechnologyUITests.swift; sourceTree = "<group>"; };
 		3CBD80D32B9F8EE000004F5C /* SportsTechnologyUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SportsTechnologyUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		68A091B52BCDCECE00312764 /* services.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = services.swift; sourceTree = "<group>"; };
-		68C5FF412BE40DE900DCF904 /* Lineups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lineups.swift; sourceTree = "<group>"; };
+		68C5FF582BE4619900DCF904 /* LineupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineupsView.swift; sourceTree = "<group>"; };
 		D80EA8492BD2E1AD001C92B0 /* Fixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fixtures.swift; sourceTree = "<group>"; };
 		D80EA84E2BD2E69B001C92B0 /* Venues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Venues.swift; sourceTree = "<group>"; };
 		D80EA8502BD2E6A6001C92B0 /* Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Status.swift; sourceTree = "<group>"; };
@@ -178,7 +179,7 @@
 				3CBD80B82B9F8EDF00004F5C /* ViewController.swift */,
 				D80EA8592BD30295001C92B0 /* FixtureViews.swift */,
 				D86DD0652BD347DD00C1E55B /* GamesInfo.swift */,
-				68C5FF412BE40DE900DCF904 /* Lineups.swift */,
+				68C5FF582BE4619900DCF904 /* LineupsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -317,6 +318,7 @@
 				D86DD0662BD347DD00C1E55B /* GamesInfo.swift in Sources */,
 				D80EA85A2BD30295001C92B0 /* FixtureViews.swift in Sources */,
 				68A091B62BCDCECE00312764 /* services.swift in Sources */,
+				68C5FF592BE4619900DCF904 /* LineupsView.swift in Sources */,
 				3CBD80B92B9F8EDF00004F5C /* ViewController.swift in Sources */,
 				D8C433A62BE419AA00C0E1A7 /* Lineups.swift in Sources */,
 				D8CB7DBE2BE44ADB00885A38 /* Player.swift in Sources */,
@@ -500,7 +502,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 25N7GFB35A;
+				DEVELOPMENT_TEAM = 793QY8AV8M;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SportsTechnology/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
@@ -516,7 +518,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = cmu.SportsTechnology;
+				PRODUCT_BUNDLE_IDENTIFIER = cmu.SportsTechnology1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -531,7 +533,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 25N7GFB35A;
+				DEVELOPMENT_TEAM = 793QY8AV8M;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SportsTechnology/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
@@ -547,7 +549,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = cmu.SportsTechnology;
+				PRODUCT_BUNDLE_IDENTIFIER = cmu.SportsTechnology1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
