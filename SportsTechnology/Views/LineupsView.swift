@@ -10,29 +10,34 @@ import SwiftUI
 
 struct PlayerView: View {
     var player: Player
+    var home: Bool
     var action: () -> Void  // Add an action to handle taps
     
     var body: some View {
-        VStack {
+        VStack(alignment: .center, spacing: 0.5) {
+            Spacer(minLength: 40)
+//            Text("\(player.number)")
+//                .fontWeight(.bold)
+//                .font(.title3)
+            // Display player's number on the jersey
             Text("\(player.number)")
-                .fontWeight(.bold)
-                .font(.system(size: 12))
+                .font(.title3)
+                .foregroundColor(home ? .black : .white)
+                .padding(.top, 13)
+
             Text(player.name)
-                .font(.system(size: 10))
+                .font(.headline)
+                .foregroundColor(home ? .black : .white)
                 .lineLimit(1)
-                .frame(maxWidth: 60)
+                .frame(maxWidth: 100)
             Text(player.pos)
-                .font(.system(size: 8))
+                .font(.caption)
+                .foregroundColor(home ? .black : .white)
                 .foregroundColor(.secondary)
         }
         .padding(4)
-        .frame(width: 70, height: 60)
-        .background(Color.blue.opacity(0.75))
-        .cornerRadius(6)
-        .overlay(
-            RoundedRectangle(cornerRadius: 6)
-                .stroke(Color.white, lineWidth: 1)
-        )
+        .frame(width: 100, height: 100)
+        .background(Color.clear)
         .onTapGesture {
             action()
         }
@@ -84,6 +89,7 @@ struct FieldView: View {
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
+                .padding(.bottom, 30)
                 .background(Color.clear)
                 .cornerRadius(8)
                 .shadow(radius: 3)
@@ -104,12 +110,17 @@ struct FieldView: View {
                                 let column = home ? colIndex : columns - 1 - colIndex
                                 let gridIndex = "\(row + 1):\(column + 1)"
                                 if let player = lineup.start_XI.first(where: { $0.grid == gridIndex }) {
-                                    PlayerView(player: player) {
-                                        print("Calling show playerstats...")
-                                        showPlayerStats(fixtureId, player.id)
-                                        print("Called!")
-                                        //self.selectedPlayer = player
-                                    }
+                                    Image(home ? "home" : "away")
+                                        .resizable()
+                                        .scaledToFill()
+                                        .scaleEffect(home ? 0.9 : 0.8)
+                                        .overlay(
+                                            PlayerView(player: player, home: home) {
+                                                print("Calling show playerstats...")
+                                                showPlayerStats(fixtureId, player.id)
+                                                print("Called!")
+                                                //self.selectedPlayer = player
+                                            })
                                 } else {
                                     Spacer()  // Empty space for no player in this grid position
                                 }
@@ -117,6 +128,8 @@ struct FieldView: View {
                             Spacer()
                         }
                         .frame(height: columnWidth)
+                        .offset(y: home ? 0 : -30)
+                        .scaleEffect(home ? 1.0 : 0.9)
                     }
                     
                     if home {

@@ -19,6 +19,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     var FIELD_HEIGHT: CGFloat? //meters
     var selectedFixtures: LeagueInfo?
     var chosenTeams: [Lineup]?
+    var CANVAS_Z_POS: Float = 500
     
     
     override func viewDidLoad() {
@@ -29,7 +30,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Set up the view
         sceneView.frame = self.view.frame
         sceneView.delegate = self
-        self.view.addSubview(sceneView)
         
         // Set up a tap gesture recognizer
         tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(wakeUp))
@@ -143,9 +143,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         scene.rootNode.addChildNode(button)
         
-        
-        scene.rootNode.addChildNode(setupCanvas(transform: transform))
-        
         // Add the canvas node to the scene's root node
         sceneView.scene = scene
     }
@@ -185,6 +182,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Remove the button from the canvas node
         if let buttonNode = sceneView.scene.rootNode.childNode(withName: "buttonNode", recursively: true) {
             buttonNode.removeFromParentNode()
+            self.view.addSubview(sceneView)
         }
         Task {
             print("Beginning Task...")
@@ -244,12 +242,12 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         let node = SCNNode()
 
-        let plane = SCNPlane(width: 250,
-                             height: 250)
+        let plane = SCNPlane(width: 900,
+                             height: 400)
         
         
         let planeNode = SCNNode(geometry: plane)
-        planeNode.position.z -= 250
+        planeNode.position.z -= CANVAS_Z_POS
         createHostingControllerForLineups(for: planeNode, lineupInfo: lineupInfo, fixtureId: fixtureId)
         
         node.addChildNode(planeNode)
@@ -288,7 +286,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 arVC.willMove(toParent: self)
                 // make the hosting VC a child to the main view controller
                 self.addChild(arVC)
-                arVC.view.frame = CGRect(x: 0, y: 0, width: 900, height: 450) // Landscape dimensions
+                arVC.view.frame = CGRect(x: 0, y: 0, width: 1000, height: 500) // Landscape dimensions
 
                 // set the pixel size of the Card View
                 //arVC.view.frame = CGRect(x: 0, y: 0, width: 300, height: 300)
@@ -332,7 +330,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // so we have to rotate it on X-axis by -90 degrees to
         // make it flat to the image detected
         //planeNode.eulerAngles.x = -.pi / 2
-        planeNode.position.z -= 200
+        planeNode.position.z -= CANVAS_Z_POS
         sceneView.isUserInteractionEnabled = true
         createHostingControllerForPlayerStats(for: planeNode, player: player)
         
@@ -396,7 +394,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             // so we have to rotate it on X-axis by -90 degrees to
             // make it flat to the image detected
             //planeNode.eulerAngles.x = -.pi / 2
-            planeNode.position.z -= 200
+            planeNode.position.z -= CANVAS_Z_POS
             sceneView.isUserInteractionEnabled = true
             createHostingController(for: planeNode, fixtures: fixtures)
             
