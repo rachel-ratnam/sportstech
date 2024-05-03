@@ -16,7 +16,7 @@ struct GameInfo {
 
 class NetworkService {
     
-    var urlString: String = "http://10.0.0.7:3001" // NodeJS server ip
+    var urlString: String = "http://192.168.1.224:3001" // NodeJS server ip
     
     /* API Endpoints for NodeJS server */
     static func fetchData(query: String, playerId: Int = 0) async throws -> Any {
@@ -37,7 +37,7 @@ class NetworkService {
             return try! parseTeamLineups(data: data)
         }
         else{
-            return 0//try! parsePlayerStats(data: data, playerId: playerId)
+            return try! parsePlayerStats(data: data, playerId: playerId)
         }
     }
     

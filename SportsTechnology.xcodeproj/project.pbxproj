@@ -510,7 +510,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 793QY8AV8M;
+				DEVELOPMENT_TEAM = 25N7GFB35A;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SportsTechnology/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
@@ -526,7 +526,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = cmu.SportsTechnology1;
+				PRODUCT_BUNDLE_IDENTIFIER = cmu.SportsTechnology;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -541,7 +541,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 793QY8AV8M;
+				DEVELOPMENT_TEAM = 25N7GFB35A;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SportsTechnology/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
@@ -557,7 +557,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = cmu.SportsTechnology1;
+				PRODUCT_BUNDLE_IDENTIFIER = cmu.SportsTechnology;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
