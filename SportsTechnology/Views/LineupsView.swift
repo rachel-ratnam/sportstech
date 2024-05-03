@@ -52,8 +52,6 @@ struct FieldView: View {
             let height = geometry.size.height
             let rows = 5
             let columns = 5
-            let backgroundGradient = LinearGradient(gradient: Gradient(colors: [Color.green.opacity(0.6), Color.green]), startPoint: .top, endPoint: .bottom)
-            
             VStack {
                 HStack {
                     if home {  // Left alignment for the home team
@@ -86,60 +84,51 @@ struct FieldView: View {
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
-                .background(Color.white)
+                .background(Color.clear)
                 .cornerRadius(8)
                 .shadow(radius: 3)
-
-                ZStack {
-                    backgroundGradient
-                        .frame(width: width, height: height)
-                        .cornerRadius(10)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.white, lineWidth: 1)
-                        )
-
-                    HStack(alignment: .center, spacing: 10) {
-                        if !home {
+                .offset(y: -100)
+                HStack(alignment: .center, spacing: 10) {
+                    if !home {
+                        Spacer()
+                    }
+                    
+                    let filledColumns = Set(lineup.start_XI.map { $0.grid.split(separator: ":").last! }).count
+                    let columnWidth = width / CGFloat(filledColumns)
+                        
+                    ForEach(0..<rows, id: \.self) { index in
+                        let row = home ? index : columns - 1 - index
+                        VStack {
                             Spacer()
-                        }
-                        
-                        let filledColumns = Set(lineup.start_XI.map { $0.grid.split(separator: ":").last! }).count
-                        let columnWidth = width / CGFloat(filledColumns)
-                        
-                        ForEach(0..<rows, id: \.self) { index in
-                            let row = home ? index : columns - 1 - index
-                            VStack {
-                                Spacer()
-                                ForEach(0..<columns, id: \.self) { colIndex in
-                                    let column = home ? colIndex : columns - 1 - colIndex
-                                    let gridIndex = "\(row + 1):\(column + 1)"
-                                    if let player = lineup.start_XI.first(where: { $0.grid == gridIndex }) {
-                                        PlayerView(player: player) {
-                                            print("Calling show playerstats...")
-                                            showPlayerStats(fixtureId, player.id)
-                                            print("Called!")
-                                            //self.selectedPlayer = player
-                                        }
-                                    } else {
-                                        Spacer()  // Empty space for no player in this grid position
+                            ForEach(0..<columns, id: \.self) { colIndex in
+                                let column = home ? colIndex : columns - 1 - colIndex
+                                let gridIndex = "\(row + 1):\(column + 1)"
+                                if let player = lineup.start_XI.first(where: { $0.grid == gridIndex }) {
+                                    PlayerView(player: player) {
+                                        print("Calling show playerstats...")
+                                        showPlayerStats(fixtureId, player.id)
+                                        print("Called!")
+                                        //self.selectedPlayer = player
                                     }
+                                } else {
+                                    Spacer()  // Empty space for no player in this grid position
                                 }
-                                Spacer()
                             }
-                            .frame(height: columnWidth)
-                        }
-                        
-                        if home {
                             Spacer()
                         }
+                        .frame(height: columnWidth)
+                    }
+                    
+                    if home {
+                        Spacer()
                     }
                 }
-                .frame(width: width, height: height)
             }
+            .frame(width: width, height: height)
         }
     }
 }
+
 
 struct MatchView: View {
     var homeLineup: Lineup
@@ -147,18 +136,27 @@ struct MatchView: View {
     var fixtureId: Int
     @State private var selectedPlayer: Player?  // State to track selected player
     var showPlayerStats: (_ fixtureId: Int, _ playerId: Int) -> Void  // New addition
-
+    
     var body: some View {
-        HStack(spacing: 20) {
-            FieldView(lineup: homeLineup, home: true, fixtureId: fixtureId, selectedPlayer: $selectedPlayer, showPlayerStats: showPlayerStats)
-            FieldView(lineup: awayLineup, home: false, fixtureId: fixtureId, selectedPlayer: $selectedPlayer, showPlayerStats: showPlayerStats)
-        }
-        .sheet(item: $selectedPlayer) { player in
-            PlayerStatsView(player: player) {
-                self.selectedPlayer = nil  // This will close the modal
+            ZStack(alignment: .top){
+                // Background image
+                Image("soccer_pitch")
+                    .resizable()
+                    .scaledToFill()
+                    .edgesIgnoringSafeArea(.all)
+                    .offset(y: -28)
+                HStack(spacing: 20) {
+                    FieldView(lineup: homeLineup, home: true, fixtureId: fixtureId, selectedPlayer: $selectedPlayer, showPlayerStats: showPlayerStats)
+                    FieldView(lineup: awayLineup, home: false, fixtureId: fixtureId, selectedPlayer: $selectedPlayer, showPlayerStats: showPlayerStats)
+                    
+                }
+            }
+            .sheet(item: $selectedPlayer) { player in
+                PlayerStatsView(player: player) {
+                    self.selectedPlayer = nil  // This will close the modal
+                }
             }
         }
-    }
 }
 
 
