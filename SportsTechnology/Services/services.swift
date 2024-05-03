@@ -37,7 +37,7 @@ class NetworkService {
             return try! parseTeamLineups(data: data)
         }
         else{
-            return 0//try! parsePlayerStats(data: data, playerId: playerId)
+            return try! parsePlayerStats(data: data, playerId: playerId)
         }
     }
     

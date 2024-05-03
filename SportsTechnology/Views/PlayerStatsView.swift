@@ -18,6 +18,17 @@ struct PlayerStatsView: View {
         NavigationView {
             VStack {
                 HStack {
+                    Button(action: onClose) {
+                                    Label("Close", systemImage: "xmark.circle.fill")
+                                        .labelStyle(IconOnlyLabelStyle())
+                                        .font(.title)
+                                        .padding()
+                                        .foregroundColor(.white)
+                                        .background(Color.black.opacity(0.6))
+                                        .clipShape(Circle())
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                .padding()
                     // Player Image
                     AsyncImage(url: URL(string: player.photo)) { image in
                         image.resizable()
@@ -55,11 +66,6 @@ struct PlayerStatsView: View {
 
                 Spacer()
             }
-            .navigationBarItems(leading: Button(action: onClose) {
-                Image(systemName: "xmark.circle.fill")
-                    .imageScale(.large)
-                    .foregroundColor(.red)
-            })
             .navigationBarTitle("", displayMode: .inline)
         }
     }

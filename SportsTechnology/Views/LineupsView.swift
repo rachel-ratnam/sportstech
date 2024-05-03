@@ -42,7 +42,9 @@ struct PlayerView: View {
 struct FieldView: View {
     var lineup: Lineup
     var home: Bool
+    var fixtureId: Int
     @Binding var selectedPlayer: Player?  // Binding to handle selected player
+    var showPlayerStats: (_ fixtureId: Int, _ playerId: Int) -> Void  // Modified to take parameters
 
     var body: some View {
         GeometryReader { geometry in
@@ -114,7 +116,10 @@ struct FieldView: View {
                                     let gridIndex = "\(row + 1):\(column + 1)"
                                     if let player = lineup.start_XI.first(where: { $0.grid == gridIndex }) {
                                         PlayerView(player: player) {
-                                            self.selectedPlayer = player
+                                            print("Calling show playerstats...")
+                                            showPlayerStats(fixtureId, player.id)
+                                            print("Called!")
+                                            //self.selectedPlayer = player
                                         }
                                     } else {
                                         Spacer()  // Empty space for no player in this grid position
@@ -139,12 +144,14 @@ struct FieldView: View {
 struct MatchView: View {
     var homeLineup: Lineup
     var awayLineup: Lineup
+    var fixtureId: Int
     @State private var selectedPlayer: Player?  // State to track selected player
+    var showPlayerStats: (_ fixtureId: Int, _ playerId: Int) -> Void  // New addition
 
     var body: some View {
         HStack(spacing: 20) {
-            FieldView(lineup: homeLineup, home: true, selectedPlayer: $selectedPlayer)
-            FieldView(lineup: awayLineup, home: false, selectedPlayer: $selectedPlayer)
+            FieldView(lineup: homeLineup, home: true, fixtureId: fixtureId, selectedPlayer: $selectedPlayer, showPlayerStats: showPlayerStats)
+            FieldView(lineup: awayLineup, home: false, fixtureId: fixtureId, selectedPlayer: $selectedPlayer, showPlayerStats: showPlayerStats)
         }
         .sheet(item: $selectedPlayer) { player in
             PlayerStatsView(player: player) {
@@ -184,7 +191,10 @@ struct MatchView_Previews: PreviewProvider {
                 Player(id: 20, name: "Kane", number: 10, pos: "ST", grid: "4:1"),
                 Player(id: 21, name: "Son", number: 7, pos: "LW", grid: "3:1"),
                 Player(id: 22, name: "Bergwijn", number: 23, pos: "ST", grid: "4:2")
-            ], subs: [], coach_name: "Postecoglou", coach_photo: "")
+            ], subs: [], coach_name: "Postecoglou", coach_photo: ""), fixtureId: 592872, showPlayerStats: { fixtureId, playerId in
+                // Dummy implementation for preview purposes
+                print("Show player stats called with fixtureId: \(fixtureId) and playerId: \(playerId)")
+            }
         )
         .previewLayout(.fixed(width: 1200, height: 400))
     }

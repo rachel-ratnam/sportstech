@@ -20,6 +20,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     var selectedFixtures: LeagueInfo?
     var chosenTeams: [Lineup]?
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         FIELD_WIDTH = 0.6
@@ -211,7 +212,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 let data = try await NetworkService.fetchTeamLineups(fixtureId: fixtureId) as? [Lineup]
                 print("Received data from server: \(String(describing: data))")
                 DispatchQueue.main.async {
-                    self.displayLineups(lineupInfo: (data as [Lineup]?)!)
+                    self.displayLineups(lineupInfo: (data as [Lineup]?)!, fixtureId: fixtureId)
                 }
             } catch {
                 print("An error occurred: \(error)")
@@ -219,23 +220,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         }
     }
     
-    @objc func showPlayerStats(fixtureId: Int, playerId: Int) {
-        Task {
-            print("Beginning Task...")
-            do {
-                print("Fetching data...")
-                let data = try await NetworkService.fetchPlayerStats(fixtureId: fixtureId, playerId: playerId)
-                //addFixtureNodes(data: data)
-                print("Received data from server: \(String(describing: data))")
-                DispatchQueue.main.async {
-                    //self.createImageForAR(fixtures: data.fixtures)
-                    self.displayPlayerStats(data: data)
-                }
-            } catch {
-                print("An error occurred: \(error)")
-            }
-        }
-    }
     
     func displayFixtures(fixtures: [Fixture]) {
         let fixtureView = GamesInfo(fixtures: fixtures) { fixtureId in
@@ -250,7 +234,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         present(hostingController, animated: true)
     }
     
-    func displayLineups(lineupInfo: [Lineup]) {
+    func displayLineups(lineupInfo: [Lineup], fixtureId: Int) {
         print("Removing other nodes...")
         sceneView.scene.rootNode.enumerateChildNodes { (node, stop) in
                 node.removeFromParentNode()
@@ -265,17 +249,39 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         
         let planeNode = SCNNode(geometry: plane)
-        planeNode.position.z -= 200
-        createHostingControllerForLineups(for: planeNode, lineupInfo: lineupInfo)
+        planeNode.position.z -= 250
+        createHostingControllerForLineups(for: planeNode, lineupInfo: lineupInfo, fixtureId: fixtureId)
         
         node.addChildNode(planeNode)
         sceneView.scene.rootNode.addChildNode(node)
         //self.showPlayerStats(fixtureId: 592872, playerId: 617)
     }
     
-    func createHostingControllerForLineups(for node: SCNNode, lineupInfo: [Lineup]) {
+    func showPlayerStats(fixtureId: Int, playerId: Int) {
+        Task {
+            print("Beginning Task...")
+            do {
+                print("Fetching data...")
+                let data = try await NetworkService.fetchPlayerStats(fixtureId: fixtureId, playerId: playerId)
+                //addFixtureNodes(data: data)
+                print("Received data from server: \(String(describing: data))")
+                DispatchQueue.main.async {
+                    //self.createImageForAR(fixtures: data.fixtures)
+                    print("BEFORE")
+                    self.displayPlayerStats(player: data as! Player)
+                    print("AFTER")
+                }
+            } catch {
+                print("An error occurred: \(error)")
+            }
+        }
+    }
+    
+    func createHostingControllerForLineups(for node: SCNNode, lineupInfo: [Lineup], fixtureId: Int) {
             // create a hosting controller with SwiftUI view
-            let arVC = UIHostingController(rootView: MatchView(homeLineup: lineupInfo[0], awayLineup: lineupInfo[1]))
+        let arVC = UIHostingController(rootView: MatchView(homeLineup: lineupInfo[0], awayLineup: lineupInfo[1], fixtureId: fixtureId, showPlayerStats: { fixtureId, playerId in
+            self.showPlayerStats(fixtureId: fixtureId, playerId: playerId)
+        }))
             
             // Do this on the main thread
             DispatchQueue.main.async {
@@ -310,8 +316,68 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         hostingVC.view.backgroundColor = UIColor.clear
     }
     
-    func displayPlayerStats(data: Any) {
-        print("Display player stats")
+    func displayPlayerStats(player: Player) {
+        let node = SCNNode()
+        
+        // Cast the found anchor as image anchor
+        
+        // get the name of the image from the anchor
+
+        let plane = SCNPlane(width: 200,
+                             height: 200)
+        
+        
+        let planeNode = SCNNode(geometry: plane)
+        // When a plane geometry is created, by default it is oriented vertically
+        // so we have to rotate it on X-axis by -90 degrees to
+        // make it flat to the image detected
+        //planeNode.eulerAngles.x = -.pi / 2
+        planeNode.position.z -= 200
+        sceneView.isUserInteractionEnabled = true
+        createHostingControllerForPlayerStats(for: planeNode, player: player)
+        
+        node.addChildNode(planeNode)
+        sceneView.scene.rootNode.addChildNode(node)
+    }
+    
+    func createHostingControllerForPlayerStats(for node: SCNNode, player: Player) {
+            // create a hosting controller with SwiftUI view
+        let arVC = UIHostingController(rootView: PlayerStatsView(player: player) {
+            // Handle close action
+            node.removeFromParentNode()  // Removes the entire node displaying the stats
+        })
+            
+            // Do this on the main thread
+            DispatchQueue.main.async {
+                arVC.willMove(toParent: self)
+                // make the hosting VC a child to the main view controller
+                self.addChild(arVC)
+                
+                // set the pixel size of the Card View
+                arVC.view.frame = CGRect(x: 0, y: 0, width: 300, height: 300)
+                
+                // add the ar card view as a subview to the main view
+                self.view.addSubview(arVC.view)
+                
+                // render the view on the plane geometry as a material
+                self.showPlayerStatsAR(hostingVC: arVC, on: node)
+            }
+        }
+    
+    func showPlayerStatsAR(hostingVC: UIHostingController<PlayerStatsView>, on node: SCNNode) {
+        // create a new material
+        let material = SCNMaterial()
+        
+        // this allows the card to render transparent parts the right way
+        hostingVC.view.isOpaque = false
+        
+        // set the diffuse of the material to the view of the Hosting View Controller
+        material.diffuse.contents = hostingVC.view
+        
+        // Set the material to the geometry of the node (plane geometry)
+        node.geometry?.materials = [material]
+        
+        hostingVC.view.backgroundColor = UIColor.clear
     }
     
     func renderImageAR(fixtures: [Fixture]) {
@@ -331,7 +397,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             // make it flat to the image detected
             //planeNode.eulerAngles.x = -.pi / 2
             planeNode.position.z -= 200
-
+            sceneView.isUserInteractionEnabled = true
             createHostingController(for: planeNode, fixtures: fixtures)
             
             node.addChildNode(planeNode)
